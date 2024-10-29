@@ -3,6 +3,7 @@ package gregtech.loaders.preload;
 import static gregtech.api.enums.FluidState.GAS;
 import static gregtech.api.enums.FluidState.LIQUID;
 import static gregtech.api.enums.FluidState.MOLTEN;
+import static gregtech.api.enums.FluidState.PLASMA;
 import static gregtech.api.enums.FluidState.SLURRY;
 import static gregtech.api.enums.Mods.AppliedEnergistics2;
 import static gregtech.api.enums.Mods.PamsHarvestCraft;
@@ -21,7 +22,6 @@ import java.util.Locale;
 
 import net.minecraft.init.Blocks;
 import net.minecraft.init.Items;
-import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fluids.FluidContainerRegistry;
 import net.minecraftforge.fluids.FluidRegistry;
@@ -79,10 +79,12 @@ import gregtech.common.blocks.BlockStones;
 import gregtech.common.blocks.BlockTintedIndustrialGlass;
 import gregtech.common.blocks.BlockWormholeRender;
 import gregtech.common.blocks.TileEntityOres;
+import gregtech.common.items.ItemAdvancedSensorCard;
 import gregtech.common.items.ItemDepletedCell;
 import gregtech.common.items.ItemFluidDisplay;
 import gregtech.common.items.ItemIntegratedCircuit;
 import gregtech.common.items.ItemNeutronReflector;
+import gregtech.common.items.ItemSensorCard;
 import gregtech.common.items.ItemTierDrone;
 import gregtech.common.items.ItemVolumetricFlask;
 import gregtech.common.items.ItemWirelessHeadphones;
@@ -178,25 +180,18 @@ public class LoaderGTBlockFluid implements Runnable {
 
         ItemList.VOLUMETRIC_FLASK.set(new ItemVolumetricFlask("Volumetric_Flask", "Volumetric flask", 1000));
 
-        Item tItem = (Item) GTUtility.callConstructor(
-            "gregtech.common.items.ItemSensorCard",
-            0,
-            null,
-            false,
-            new Object[] { "sensorcard", "GregTech Sensor Card" });
-        ItemList.NC_SensorCard.set(
-            tItem == null ? new GTGenericItem("sensorcard", "GregTech Sensor Card", "Nuclear Control not installed")
-                : tItem);
-
-        Item advSensorCard = (Item) GTUtility
-            .callConstructor("gregtech.common.items.ItemAdvancedSensorCard", 0, null, false);
-        ItemList.NC_AdvancedSensorCard.set(
-            advSensorCard == null
-                ? new GTGenericItem(
+        if (Mods.IC2NuclearControl.isModLoaded()) {
+            ItemList.NC_SensorCard.set(new ItemSensorCard("sensorcard", "GregTech Sensor Card"));
+            ItemList.NC_AdvancedSensorCard.set(new ItemAdvancedSensorCard());
+        } else {
+            ItemList.NC_SensorCard
+                .set(new GTGenericItem("sensorcard", "GregTech Sensor Card", "Nuclear Control not installed"));
+            ItemList.NC_AdvancedSensorCard.set(
+                new GTGenericItem(
                     "advancedsensorcard",
                     "GregTech Advanced Sensor Card",
-                    "Nuclear Control not installed")
-                : advSensorCard);
+                    "Nuclear Control not installed"));
+        }
 
         ItemList.Neutron_Reflector.set(new ItemNeutronReflector("neutronreflector", "Iridium Neutron Reflector", 0));
         ItemList.Reactor_Coolant_He_1
@@ -205,11 +200,11 @@ public class LoaderGTBlockFluid implements Runnable {
             .set(new ItemCoolantCellIC("180k_Helium_Coolantcell", "180k He Coolant Cell", 180000));
         ItemList.Reactor_Coolant_He_6
             .set(new ItemCoolantCellIC("360k_Helium_Coolantcell", "360k He Coolant Cell", 360000));
-        ItemList.Reactor_Coolant_NaK_1.set(new ItemCoolantCellIC("60k_NaK_Coolantcell", "60k NaK Coolantcell", 60000));
+        ItemList.Reactor_Coolant_NaK_1.set(new ItemCoolantCellIC("60k_NaK_Coolantcell", "60k NaK Coolant Cell", 60000));
         ItemList.Reactor_Coolant_NaK_3
-            .set(new ItemCoolantCellIC("180k_NaK_Coolantcell", "180k NaK Coolantcell", 180000));
+            .set(new ItemCoolantCellIC("180k_NaK_Coolantcell", "180k NaK Coolant Cell", 180000));
         ItemList.Reactor_Coolant_NaK_6
-            .set(new ItemCoolantCellIC("360k_NaK_Coolantcell", "360k NaK Coolantcell", 360000));
+            .set(new ItemCoolantCellIC("360k_NaK_Coolantcell", "360k NaK Coolant Cell", 360000));
 
         ItemList.Reactor_Coolant_Sp_1
             .set(new ItemCoolantCellIC("180k_Space_Coolantcell", "180k Sp Coolant Cell", 180000));
@@ -240,12 +235,12 @@ public class LoaderGTBlockFluid implements Runnable {
         ItemList.Depleted_Thorium_1.set(new ItemDepletedCell("ThoriumcellDep", "Fuel Rod (Depleted Thorium)", 1));
         ItemList.Depleted_Thorium_2
             .set(new ItemDepletedCell("Double_ThoriumcellDep", "Dual Fuel Rod (Depleted Thorium)", 1)); // TODO
-                                                                                                        // CHECK
-                                                                                                        // num
+        // CHECK
+        // num
         ItemList.Depleted_Thorium_4
             .set(new ItemDepletedCell("Quad_ThoriumcellDep", "Quad Fuel Rod (Depleted Thorium)", 1)); // TODO
-                                                                                                      // CHECK
-                                                                                                      // num
+        // CHECK
+        // num
         ItemList.ThoriumCell_1.set(
             new ItemRadioactiveCellIC(
                 "Thoriumcell",
@@ -1315,6 +1310,15 @@ public class LoaderGTBlockFluid implements Runnable {
                 GTOreDictUnificator.get(OrePrefixes.cell, MaterialsUEVplus.Protomatter, 1L),
                 ItemList.Cell_Empty.get(1L));
 
+        GTFluidFactory.builder("plasma.infinity")
+            .withLocalizedName("Infinity Plasma")
+            .withStateAndTemperature(PLASMA, 10000)
+            .buildAndRegister()
+            .configureMaterials(Materials.Infinity)
+            .registerBContainers(
+                GTOreDictUnificator.get(OrePrefixes.cellPlasma, Materials.Infinity, 1L),
+                ItemList.Cell_Empty.get(1L));
+
         GTFluidFactory.builder("fieryblood")
             .withLocalizedName("Fiery Blood")
             .withStateAndTemperature(LIQUID, 6400)
@@ -2032,20 +2036,6 @@ public class LoaderGTBlockFluid implements Runnable {
             .eut(2)
             .addTo(maceratorRecipes);
 
-        GTValues.RA.stdBuilder()
-            .itemInputs(new ItemStack(Blocks.furnace, 1, WILDCARD))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.Stone, 8L))
-            .duration(20 * SECONDS)
-            .eut(2)
-            .addTo(maceratorRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(new ItemStack(Blocks.lit_furnace, 1, WILDCARD))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.dust, Materials.Stone, 8L))
-            .duration(20 * SECONDS)
-            .eut(2)
-            .addTo(maceratorRecipes);
-
         GTOreDictUnificator.set(
             OrePrefixes.ingot,
             Materials.FierySteel,
@@ -2091,34 +2081,6 @@ public class LoaderGTBlockFluid implements Runnable {
             .set(OrePrefixes.nugget, Materials.Void, GTModHandler.getModItem(Thaumcraft.ID, "ItemNugget", 1L, 7));
         GTOreDictUnificator
             .set(OrePrefixes.ingot, Materials.Void, GTModHandler.getModItem(Thaumcraft.ID, "ItemResource", 1L, 16));
-
-        GTOreDictUnificator.set(
-            OrePrefixes.plate,
-            Materials.Iron,
-            GTModHandler.getModItem(Railcraft.ID, "part.plate", 1L, 0),
-            false,
-            false);
-
-        GTOreDictUnificator.set(
-            OrePrefixes.plate,
-            Materials.Steel,
-            GTModHandler.getModItem(Railcraft.ID, "part.plate", 1L, 1),
-            false,
-            false);
-
-        GTOreDictUnificator.set(
-            OrePrefixes.plate,
-            Materials.TinAlloy,
-            GTModHandler.getModItem(Railcraft.ID, "part.plate", 1L, 2),
-            false,
-            false);
-
-        GTOreDictUnificator.set(
-            OrePrefixes.plate,
-            Materials.Copper,
-            GTModHandler.getModItem(Railcraft.ID, "part.plate", 1L, 3),
-            false,
-            false);
 
         GTOreDictUnificator.set(
             OrePrefixes.dust,

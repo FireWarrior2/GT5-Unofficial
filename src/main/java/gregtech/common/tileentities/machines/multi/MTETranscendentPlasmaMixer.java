@@ -69,6 +69,7 @@ import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.render.TextureFactory;
 import gregtech.api.util.GTRecipe;
+import gregtech.api.util.GTRecipeConstants;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.OverclockCalculator;
 
@@ -119,13 +120,11 @@ public class MTETranscendentPlasmaMixer extends MTEEnhancedMultiBlockBase<MTETra
             .addInfo("This multiblock will run in parallel according to the amount set")
             .addInfo("in the parallel menu. All inputs will scale, except time.")
             .addInfo("All EU is deducted from wireless EU networks only.")
-            .addInfo(AuthorColen)
-            .addSeparator()
             .beginStructureBlock(5, 7, 5, false)
             .addStructureInfo(GOLD + "1+ " + GRAY + "Input Hatch")
             .addStructureInfo(GOLD + "1+ " + GRAY + "Output Hatch")
             .addStructureInfo(GOLD + "1+ " + GRAY + "Input Bus")
-            .toolTipFinisher("Gregtech");
+            .toolTipFinisher(AuthorColen);
         return tt;
     }
 
@@ -179,7 +178,8 @@ public class MTETranscendentPlasmaMixer extends MTEEnhancedMultiBlockBase<MTETra
             @Override
             protected CheckRecipeResult validateRecipe(@Nonnull GTRecipe recipe) {
                 BigInteger availableEU = getUserEU(ownerUUID);
-                recipeEU = BigInteger.valueOf(10L * recipe.mEUt * recipe.mDuration);
+                long multiplier = (long) recipe.getMetadataOrDefault(GTRecipeConstants.EU_MULTIPLIER, 10);
+                recipeEU = BigInteger.valueOf(multiplier * recipe.mEUt * recipe.mDuration);
                 if (availableEU.compareTo(recipeEU) < 0) {
                     finalConsumption = BigInteger.ZERO;
                     return CheckRecipeResultRegistry.insufficientStartupPower(recipeEU);

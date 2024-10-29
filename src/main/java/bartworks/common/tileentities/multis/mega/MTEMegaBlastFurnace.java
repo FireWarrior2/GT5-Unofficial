@@ -13,7 +13,6 @@
 
 package bartworks.common.tileentities.multis.mega;
 
-import static bartworks.util.BWTooltipReference.MULTIBLOCK_ADDED_BY_BARTIMAEUSNEK_VIA_BARTWORKS;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.withChannel;
 import static gregtech.api.enums.HatchElement.*;
@@ -24,7 +23,7 @@ import static gregtech.api.enums.Textures.BlockIcons.OVERLAY_FRONT_ELECTRIC_BLAS
 import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofCoil;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,17 +45,21 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
 import bartworks.API.BorosilicateGlass;
-import bartworks.common.configs.ConfigHandler;
+import bartworks.common.configs.Configuration;
 import bartworks.util.BWUtil;
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.logic.ProcessingLogic;
 import gregtech.api.metatileentity.implementations.MTEHatch;
+import gregtech.api.metatileentity.implementations.MTEHatchEnergy;
 import gregtech.api.metatileentity.implementations.MTEHatchMuffler;
 import gregtech.api.metatileentity.implementations.MTEHatchOutput;
 import gregtech.api.recipe.RecipeMap;
@@ -68,6 +71,7 @@ import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.OverclockCalculator;
+import gregtech.common.pollution.PollutionConfig;
 
 public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace> implements ISurvivalConstructable {
 
@@ -148,7 +152,8 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
         Materials.CarbonMonoxide.getGas(1000), Materials.SulfurDioxide.getGas(1000) };
     private int mHeatingCapacity;
     private byte glassTier;
-    private final static int polPtick = ConfigHandler.basePollutionMBFSecond / 20 * ConfigHandler.megaMachinesMax;
+    private final static int polPtick = PollutionConfig.basePollutionMBFSecond / 20
+        * Configuration.Multiblocks.megaMachinesMax;
 
     public MTEMegaBlastFurnace(int aID, String aName, String aNameRegional) {
         super(aID, aName, aNameRegional);
@@ -167,7 +172,6 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
     protected MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType("Blast Furnace")
-            .addInfo("Controller block for the Mega Blast Furnace")
             .addInfo("You can use some fluids to reduce recipe time. Place the circuit in the Input Bus")
             .addInfo("Each 900K over the min. Heat required reduces power consumption by 5% (multiplicatively)")
             .addInfo("Each 1800K over the min. Heat allows for an overclock to be upgraded to a perfect overclock.")
@@ -184,7 +188,6 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
                     + EnumChatFormatting.GRAY
                     + " Laser Hatches.")
             .addPollutionAmount(20 * this.getPollutionPerTick(null))
-            .addSeparator()
             .beginStructureBlock(15, 20, 15, true)
             .addController("3rd layer center")
             .addCasingInfoRange("Heat Proof Machine Casing", 0, 279, false)
@@ -201,7 +204,7 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
             .addStructureInfo("Recovery amount scales with Muffler Hatch tier")
             .addOutputHatch("Platline fluids, Any bottom layer casing")
             .addStructureHint("This Mega Multiblock is too big to have its structure hologram displayed fully.")
-            .toolTipFinisher(MULTIBLOCK_ADDED_BY_BARTIMAEUSNEK_VIA_BARTWORKS);
+            .toolTipFinisher();
         return tt;
     }
 
@@ -312,7 +315,7 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
                     ? CheckRecipeResultRegistry.SUCCESSFUL
                     : CheckRecipeResultRegistry.insufficientHeat(recipe.mSpecialValue);
             }
-        }.setMaxParallel(ConfigHandler.megaMachinesMax);
+        }.setMaxParallel(Configuration.Multiblocks.megaMachinesMax);
     }
 
     @Override
@@ -357,7 +360,7 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
         if (isOutputPollution) {
             tOutputHatches = this.mPollutionOutputHatches;
             int pollutionReduction = 0;
-            for (MTEHatchMuffler tHatch : filterValidMTEs(mMufflerHatches)) {
+            for (MTEHatchMuffler tHatch : validMTEList(mMufflerHatches)) {
                 pollutionReduction = 100 - tHatch.calculatePollutionReduction(100);
                 break;
             }
@@ -381,8 +384,7 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
             || this.mMaintenanceHatches.size() != 1) return false;
 
         if (this.glassTier < 8) {
-            for (int i = 0; i < this.mExoticEnergyHatches.size(); ++i) {
-                MTEHatch hatch = this.mExoticEnergyHatches.get(i);
+            for (MTEHatch hatch : this.mExoticEnergyHatches) {
                 if (hatch.getConnectionType() == MTEHatch.ConnectionType.LASER) {
                     return false;
                 }
@@ -390,8 +392,8 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
                     return false;
                 }
             }
-            for (int i = 0; i < this.mEnergyHatches.size(); ++i) {
-                if (this.glassTier < this.mEnergyHatches.get(i).mTier) {
+            for (MTEHatchEnergy mEnergyHatch : this.mEnergyHatches) {
+                if (this.glassTier < mEnergyHatch.mTier) {
                     return false;
                 }
             }
@@ -426,5 +428,11 @@ public class MTEMegaBlastFurnace extends MegaMultiBlockBase<MTEMegaBlastFurnace>
     @Override
     public boolean supportsVoidProtection() {
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    protected SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_MEGA_BLAST_FURNACE_LOOP;
     }
 }

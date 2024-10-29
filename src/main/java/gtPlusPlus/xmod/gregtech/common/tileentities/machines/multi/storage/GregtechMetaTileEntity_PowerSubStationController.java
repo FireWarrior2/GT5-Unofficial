@@ -11,7 +11,7 @@ import static gregtech.api.enums.HatchElement.Energy;
 import static gregtech.api.enums.HatchElement.Maintenance;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofHatchAdderOptional;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 import static gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase.GTPPHatchElement.TTDynamo;
 import static gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase.GTPPHatchElement.TTEnergy;
 
@@ -69,19 +69,18 @@ import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gtPlusPlus.api.objects.Logger;
 import gtPlusPlus.core.block.ModBlocks;
-import gtPlusPlus.core.lib.GTPPCore;
+import gtPlusPlus.core.config.ASMConfiguration;
 import gtPlusPlus.core.util.MovingAverageLong;
 import gtPlusPlus.core.util.Utils;
 import gtPlusPlus.core.util.math.MathUtils;
 import gtPlusPlus.core.util.minecraft.PlayerUtils;
-import gtPlusPlus.preloader.asm.AsmConfig;
 import gtPlusPlus.xmod.gregtech.api.gui.GTPPUITextures;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase;
 
 public class GregtechMetaTileEntity_PowerSubStationController
     extends GTPPMultiBlockBase<GregtechMetaTileEntity_PowerSubStationController> implements ISurvivalConstructable {
 
-    private static enum TopState {
+    private enum TopState {
         MayBeTop,
         Top,
         NotTop
@@ -99,7 +98,7 @@ public class GregtechMetaTileEntity_PowerSubStationController
     private final int ENERGY_TAX = 5;
 
     private int mCasing;
-    private int[] cellCount = new int[6];
+    private final int[] cellCount = new int[6];
     private TopState topState = TopState.MayBeTop;
     private static IStructureDefinition<GregtechMetaTileEntity_PowerSubStationController> STRUCTURE_DEFINITION = null;
 
@@ -128,14 +127,13 @@ public class GregtechMetaTileEntity_PowerSubStationController
             .addInfo("Hatches can be placed nearly anywhere")
             .addInfo("HV Energy/Dynamo Hatches are the lowest tier you can use")
             .addInfo("Supports voltages >= UHV using MAX tier components.")
-            .addSeparator()
             .addController("Bottom Center")
             .addCasingInfoMin("Sub-Station External Casings", 10, false)
             .addDynamoHatch("Any Casing", 1)
             .addEnergyHatch("Any Casing", 1)
             .addSubChannelUsage("capacitor", "Vanadium Capacitor Cell Tier")
             .addSubChannelUsage("height", "Height of structure")
-            .toolTipFinisher(GTPPCore.GT_Tooltip_Builder.get());
+            .toolTipFinisher();
         return tt;
     }
 
@@ -174,7 +172,7 @@ public class GregtechMetaTileEntity_PowerSubStationController
     }
 
     private void checkMachineProblem(String msg) {
-        if (!AsmConfig.disableAllLogging) {
+        if (!ASMConfiguration.debug.disableAllLogging) {
             Logger.INFO("Power Sub-Station problem: " + msg);
         }
     }
@@ -212,17 +210,13 @@ public class GregtechMetaTileEntity_PowerSubStationController
     }
 
     public static int getMaxHatchTier(int aCellTier) {
-        switch (aCellTier) {
-            case 9 -> {
-                return GTValues.VOLTAGE_NAMES[9].equals("Ultimate High Voltage") ? 15 : 9;
-            }
-            default -> {
-                if (aCellTier < 4) {
-                    return 0;
-                } else {
-                    return aCellTier;
-                }
-            }
+        if (aCellTier == 9) {
+            return GTValues.VOLTAGE_NAMES[9].equals("Ultimate High Voltage") ? 15 : 9;
+        }
+        if (aCellTier < 4) {
+            return 0;
+        } else {
+            return aCellTier;
         }
     }
 
@@ -624,18 +618,18 @@ public class GregtechMetaTileEntity_PowerSubStationController
         long aInputAverage = 0;
         long aOutputAverage = 0;
         // Input Power
-        for (MTEHatch THatch : filterValidMTEs(this.mDischargeHatches)) {
+        for (MTEHatch THatch : validMTEList(this.mDischargeHatches)) {
             aInputAverage += drawEnergyFromHatch(THatch);
         }
-        for (MTEHatch tHatch : filterValidMTEs(this.mAllEnergyHatches)) {
+        for (MTEHatch tHatch : validMTEList(this.mAllEnergyHatches)) {
             aInputAverage += drawEnergyFromHatch(tHatch);
         }
 
         // Output Power
-        for (MTEHatch THatch : filterValidMTEs(this.mChargeHatches)) {
+        for (MTEHatch THatch : validMTEList(this.mChargeHatches)) {
             aOutputAverage += addEnergyToHatch(THatch);
         }
-        for (MTEHatch tHatch : filterValidMTEs(this.mAllDynamoHatches)) {
+        for (MTEHatch tHatch : validMTEList(this.mAllDynamoHatches)) {
             aOutputAverage += addEnergyToHatch(tHatch);
         }
         // reset progress time
@@ -708,7 +702,7 @@ public class GregtechMetaTileEntity_PowerSubStationController
                 + errorCode
                 + EnumChatFormatting.RESET
                 + "]",
-            "----------------------", "Stats for Nerds",
+            EnumChatFormatting.STRIKETHROUGH + "----------------------", "Stats for Nerds",
             "Average Input: " + EnumChatFormatting.BLUE
                 + GTUtility.formatNumbers(this.getAverageEuAdded())
                 + EnumChatFormatting.RESET

@@ -14,7 +14,7 @@ import static gregtech.api.enums.Textures.BlockIcons.TURBINE_NEW;
 import static gregtech.api.enums.Textures.BlockIcons.TURBINE_NEW_ACTIVE;
 import static gregtech.api.enums.Textures.BlockIcons.TURBINE_NEW_EMPTY;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 
@@ -41,7 +41,10 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.enums.Dyes;
+import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.IIconContainer;
 import gregtech.api.interfaces.tileentity.IGregTechTileEntity;
 import gregtech.api.items.MetaGeneratedTool;
@@ -282,7 +285,7 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
                 || this.getBaseMetaTileEntity()
                     .hasInventoryBeenModified()) {
                 counter = 0;
-                baseEff = (int) turbine.getEfficiency();
+                baseEff = (int) (100 * turbine.getEfficiency());
                 optFlow = (int) turbine.getOptimalFlow();
 
                 overflowMultiplier = turbine.getOverflowEfficiency();
@@ -332,7 +335,7 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
     // Gets the maximum output that the turbine currently can handle. Going above this will cause the turbine to explode
     public long getMaximumOutput() {
         long aTotal = 0;
-        for (MTEHatchDynamo aDynamo : filterValidMTEs(mDynamoHatches)) {
+        for (MTEHatchDynamo aDynamo : validMTEList(mDynamoHatches)) {
             long aVoltage = aDynamo.maxEUOutput();
             aTotal = aDynamo.maxAmperesOut() * aVoltage;
         }
@@ -363,7 +366,7 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
     @Override
     public String[] getInfoData() {
         int mPollutionReduction = 0;
-        for (MTEHatchMuffler tHatch : filterValidMTEs(mMufflerHatches)) {
+        for (MTEHatchMuffler tHatch : validMTEList(mMufflerHatches)) {
             mPollutionReduction = Math.max(tHatch.calculatePollutionReduction(100), mPollutionReduction);
         }
 
@@ -387,13 +390,13 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
 
         long storedEnergy = 0;
         long maxEnergy = 0;
-        for (MTEHatchDynamo tHatch : filterValidMTEs(mDynamoHatches)) {
+        for (MTEHatchDynamo tHatch : validMTEList(mDynamoHatches)) {
             storedEnergy += tHatch.getBaseMetaTileEntity()
                 .getStoredEU();
             maxEnergy += tHatch.getBaseMetaTileEntity()
                 .getEUCapacity();
         }
-        String[] ret = new String[] {
+        return new String[] {
             // 8 Lines available for information panels
             tRunning + ": "
                 + EnumChatFormatting.RED
@@ -438,7 +441,6 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
                 + EnumChatFormatting.RESET
                 + " %" /* 8 */
         };
-        return ret;
     }
 
     public boolean hasTurbine() {
@@ -471,5 +473,11 @@ public abstract class MTELargeTurbine extends MTEEnhancedMultiBlockBase<MTELarge
     public int survivalConstruct(ItemStack stackSize, int elementBudget, ISurvivalBuildEnvironment env) {
         if (mMachine) return -1;
         return survivialBuildPiece(STRUCTURE_PIECE_MAIN, stackSize, 2, 2, 1, elementBudget, env, false, true);
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    protected SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_LARGE_TURBINES_LOOP;
     }
 }

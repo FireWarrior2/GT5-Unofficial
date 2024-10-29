@@ -13,6 +13,7 @@ import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
 import bartworks.system.material.WerkstoffLoader;
+import goodgenerator.items.GGMaterial;
 import gregtech.GTMod;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
@@ -138,7 +139,8 @@ public class BlastFurnaceRecipes implements Runnable {
 
         GTValues.RA.stdBuilder()
             .itemInputs(Materials.BandedIron.getDust(2), Materials.Carbon.getDust(1))
-            .itemOutputs(Materials.Iron.getIngots(outputIngotAmount), Materials.Ash.getDustTiny(2))
+            .itemOutputs(Materials.Iron.getIngots(outputIngotAmount), Materials.Ash.getDust(1))
+            .outputChances(10000, 2222)
             .fluidOutputs(Materials.CarbonDioxide.getGas(1000))
             .duration(12 * SECONDS)
             .eut((int) TierEU.RECIPE_MV)
@@ -662,6 +664,20 @@ public class BlastFurnaceRecipes implements Runnable {
             .duration(300 * SECONDS)
             .eut((int) TierEU.RECIPE_UIV)
             .metadata(COIL_HEAT, 17000)
+            .addTo(blastFurnaceRecipes);
+
+        GTValues.RA.stdBuilder()
+            .itemInputs(
+                ItemList.Phononic_Seed_Crystal.get(2),
+                MaterialsUEVplus.Eternity.getDust(8),
+                GGMaterial.shirabon.get(OrePrefixes.dust, 8),
+                GTUtility.getIntegratedCircuit(2))
+            .fluidInputs(MaterialsUEVplus.Mellion.getMolten(512 * 144L))
+            .fluidOutputs(MaterialsUEVplus.PhononCrystalSolution.getFluid(3000))
+            .duration(200 * SECONDS)
+            .eut((int) TierEU.RECIPE_UXV)
+            .metadata(COIL_HEAT, 50000)
+            .noOptimize()
             .addTo(blastFurnaceRecipes);
 
         GTValues.RA.stdBuilder()

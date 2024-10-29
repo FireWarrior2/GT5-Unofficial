@@ -17,6 +17,7 @@ import static gregtech.api.enums.Textures.BlockIcons.casingTexturePages;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofCoil;
 import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,10 +39,13 @@ import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
 import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.GTMod;
 import gregtech.api.GregTechAPI;
 import gregtech.api.enums.HeatingCoilLevel;
 import gregtech.api.enums.Materials;
+import gregtech.api.enums.SoundResource;
 import gregtech.api.interfaces.ITexture;
 import gregtech.api.interfaces.fluid.IFluidStore;
 import gregtech.api.interfaces.metatileentity.IMetaTileEntity;
@@ -115,14 +119,12 @@ public class MTEElectricBlastFurnace extends MTEAbstractMultiFurnace<MTEElectric
     protected MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType("Blast Furnace")
-            .addInfo("Controller block for the Electric Blast Furnace")
             .addInfo("You can use some fluids to reduce recipe time. Place the circuit in the Input Bus")
             .addInfo("Each 900K over the min. Heat required reduces power consumption by 5% (multiplicatively)")
             .addInfo("Each 1800K over the min. Heat allows for an overclock to be upgraded to a perfect overclock.")
             .addInfo("That means the EBF will reduce recipe time by a factor 4 instead of 2 (giving 100% efficiency).")
             .addInfo("Additionally gives +100K for every tier past MV")
             .addPollutionAmount(getPollutionPerSecond(null))
-            .addSeparator()
             .beginStructureBlock(3, 4, 3, true)
             .addController("Front bottom")
             .addCasingInfoRange("Heat Proof Machine Casing", 0, 15, false)
@@ -136,7 +138,7 @@ public class MTEElectricBlastFurnace extends MTEAbstractMultiFurnace<MTEElectric
             .addOutputHatch("Fluid outputs, Any bottom layer casing")
             .addOutputHatch("Pollution gases (CO2/CO/SO2), Any top layer casing", 1)
             .addStructureInfo("Pollution gas output amount scales with Muffler Hatch tier")
-            .toolTipFinisher("Gregtech");
+            .toolTipFinisher();
         return tt;
     }
 
@@ -273,7 +275,7 @@ public class MTEElectricBlastFurnace extends MTEAbstractMultiFurnace<MTEElectric
      */
     public int getPollutionReduction() {
         int reduction = 100;
-        for (MTEHatchMuffler tHatch : filterValidMTEs(mMufflerHatches)) {
+        for (MTEHatchMuffler tHatch : validMTEList(mMufflerHatches)) {
             reduction = Math.min(tHatch.calculatePollutionReduction(100), reduction);
         }
         return reduction;
@@ -288,7 +290,7 @@ public class MTEElectricBlastFurnace extends MTEAbstractMultiFurnace<MTEElectric
         int mPollutionReduction = getPollutionReduction();
         long storedEnergy = 0;
         long maxEnergy = 0;
-        for (MTEHatchEnergy tHatch : filterValidMTEs(mEnergyHatches)) {
+        for (MTEHatchEnergy tHatch : validMTEList(mEnergyHatches)) {
             storedEnergy += tHatch.getBaseMetaTileEntity()
                 .getStoredEU();
             maxEnergy += tHatch.getBaseMetaTileEntity()
@@ -393,5 +395,11 @@ public class MTEElectricBlastFurnace extends MTEAbstractMultiFurnace<MTEElectric
     @Override
     public boolean supportsBatchMode() {
         return true;
+    }
+
+    @SideOnly(Side.CLIENT)
+    @Override
+    protected SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_EBF_LOOP;
     }
 }

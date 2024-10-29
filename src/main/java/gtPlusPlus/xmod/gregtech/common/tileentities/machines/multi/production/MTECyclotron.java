@@ -15,7 +15,6 @@ import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import net.minecraft.block.Block;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
-import net.minecraft.util.ResourceLocation;
 import net.minecraftforge.common.util.ForgeDirection;
 
 import org.jetbrains.annotations.NotNull;
@@ -37,10 +36,10 @@ import gregtech.api.objects.GTItemStack;
 import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.pollution.PollutionConfig;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.block.ModBlocks;
 import gtPlusPlus.core.item.chemistry.IonParticles;
-import gtPlusPlus.core.lib.GTPPCore;
 import gtPlusPlus.core.util.math.MathUtils;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
@@ -138,8 +137,8 @@ public class MTECyclotron extends GTPPMultiBlockBase<MTECyclotron> implements IS
 
     @SideOnly(Side.CLIENT)
     @Override
-    protected ResourceLocation getActivitySoundLoop() {
-        return SoundResource.GT_MACHINES_FUSION_LOOP.resourceLocation;
+    protected SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_FUSION_LOOP;
     }
 
     @Override
@@ -179,7 +178,6 @@ public class MTECyclotron extends GTPPMultiBlockBase<MTECyclotron> implements IS
             .addInfo("Cyclotron Machine Casings around Cyclotron Coil Blocks")
             .addInfo("All Hatches must be IV or better")
             .addPollutionAmount(getPollutionPerSecond(null))
-            .addSeparator()
             .addCasingInfoMin("Cyclotron Machine Casings", 40, false)
             .addCasingInfoMin("Cyclotron Coil", 32, false)
             .addInputBus("Any Casing", 1)
@@ -189,7 +187,7 @@ public class MTECyclotron extends GTPPMultiBlockBase<MTECyclotron> implements IS
             .addEnergyHatch("Any Casing", 1)
             .addMaintenanceHatch("Any Casing", 1)
             .addMufflerHatch("Any Casing", 1)
-            .toolTipFinisher(GTPPCore.GT_Tooltip_Builder.get());
+            .toolTipFinisher();
         return tt;
     }
 
@@ -264,7 +262,7 @@ public class MTECyclotron extends GTPPMultiBlockBase<MTECyclotron> implements IS
 
     @Override
     public boolean onRunningTick(ItemStack aStack) {
-        if (this.mOutputBusses.size() > 0) {
+        if (!this.mOutputBusses.isEmpty()) {
             for (MTEHatchOutputBus g : this.mOutputBusses) {
                 if (g != null) {
                     for (ItemStack s : g.mInventory) {
@@ -296,7 +294,7 @@ public class MTECyclotron extends GTPPMultiBlockBase<MTECyclotron> implements IS
 
     @Override
     public int getPollutionPerSecond(ItemStack aStack) {
-        return GTPPCore.ConfigSwitches.pollutionPerSecondMultiCyclotron;
+        return PollutionConfig.pollutionPerSecondMultiCyclotron;
     }
 
     @Override

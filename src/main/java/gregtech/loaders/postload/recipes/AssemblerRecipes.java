@@ -35,6 +35,7 @@ import net.minecraft.nbt.NBTTagCompound;
 import net.minecraftforge.fluids.FluidRegistry;
 import net.minecraftforge.fluids.FluidStack;
 
+import bartworks.common.loaders.ItemRegistry;
 import gregtech.GTMod;
 import gregtech.api.enums.Dyes;
 import gregtech.api.enums.GTValues;
@@ -620,16 +621,6 @@ public class AssemblerRecipes implements Runnable {
             .fluidInputs(Materials.SeedOil.getFluid(50L))
             .duration(16 * TICKS)
             .eut(8)
-            .addTo(assemblerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.BlackSteel, 1),
-                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Plastic, 1))
-            .itemOutputs(ItemList.Block_Plascrete.get(1))
-            .fluidInputs(Materials.Concrete.getMolten(144))
-            .duration(10 * SECONDS)
-            .eut(48)
             .addTo(assemblerRecipes);
 
         GTValues.RA.stdBuilder()
@@ -2595,7 +2586,8 @@ public class AssemblerRecipes implements Runnable {
         GTValues.RA.stdBuilder()
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.plate, Materials.Aluminium, 6),
-                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Aluminium, 1))
+                GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Aluminium, 1),
+                GTUtility.getIntegratedCircuit(1))
             .itemOutputs(ItemList.Casing_FrostProof.get(1))
             .duration(2 * SECONDS + 10 * TICKS)
             .eut(16)
@@ -3599,6 +3591,28 @@ public class AssemblerRecipes implements Runnable {
             .itemOutputs(ItemList.Relativistic_Heat_Capacitor.get(1))
             .duration(5 * SECONDS)
             .eut(TierEU.RECIPE_UIV)
+            .addTo(assemblerRecipes);
+
+        GTValues.RA.stdBuilder()
+            .itemInputs(
+                ItemList.Hull_UV.get(1),
+                GTOreDictUnificator.get(OrePrefixes.stick, Materials.Americium, 2),
+                ItemList.Field_Generator_UV.get(2),
+                GTOreDictUnificator.get(OrePrefixes.wireGt12, Materials.SuperconductorUHV, 2),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UV, 2))
+            .itemOutputs(ItemList.Generator_Plasma_UV.get(1))
+            .duration(5 * SECONDS)
+            .eut(TierEU.RECIPE_HV)
+            .addTo(assemblerRecipes);
+
+        GTValues.RA.stdBuilder()
+            .itemInputs(
+                ItemList.Hull_UIV.get(1),
+                GTOreDictUnificator.get(OrePrefixes.plate, Materials.BlackPlutonium, 4),
+                GTOreDictUnificator.get(OrePrefixes.wireGt16, Materials.NetherStar, 4))
+            .itemOutputs(ItemRegistry.energyDistributor[11])
+            .duration(5 * SECONDS)
+            .eut(TierEU.RECIPE_HV)
             .addTo(assemblerRecipes);
     }
 
@@ -7114,18 +7128,6 @@ public class AssemblerRecipes implements Runnable {
             .fluidInputs(new FluidStack(FluidRegistry.getFluid("liquid helium"), 28000))
             .duration(2 * MINUTES + 40 * SECONDS)
             .eut(TierEU.RECIPE_UEV)
-            .addTo(assemblerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
-                GTOreDictUnificator.get(OrePrefixes.wireGt01, Materials.SuperconductorUMVBase, 33),
-                GTOreDictUnificator.get(OrePrefixes.pipeTiny, MaterialsUEVplus.SpaceTime, 22),
-                ItemList.Electric_Pump_UMV.get(1),
-                GTUtility.getIntegratedCircuit(9))
-            .itemOutputs(GTOreDictUnificator.get(OrePrefixes.wireGt01, Materials.SuperconductorUMV, 33))
-            .fluidInputs(new FluidStack(FluidRegistry.getFluid("liquid helium"), 36000))
-            .duration(2 * MINUTES + 40 * SECONDS)
-            .eut(TierEU.RECIPE_UMV)
             .addTo(assemblerRecipes);
     }
 

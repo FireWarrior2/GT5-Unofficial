@@ -4,7 +4,6 @@ import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofChain;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.onElementPass;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
-import static gregtech.api.enums.GTValues.AuthorEvgenWarGold;
 import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofFrame;
@@ -16,7 +15,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NBTTagCompound;
 import net.minecraft.tileentity.TileEntity;
 import net.minecraft.util.EnumChatFormatting;
-import net.minecraft.util.ResourceLocation;
 import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
@@ -35,6 +33,7 @@ import com.gtnewhorizon.structurelib.structure.StructureDefinition;
 import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 import gregtech.api.GregTechAPI;
+import gregtech.api.enums.GTValues;
 import gregtech.api.enums.Materials;
 import gregtech.api.enums.SoundResource;
 import gregtech.api.enums.Textures;
@@ -234,7 +233,6 @@ public class MTESteamWaterPump extends MTESteamMultiBase<MTESteamWaterPump> impl
     protected MultiblockTooltipBuilder createTooltip() {
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType(getMachineType())
-            .addInfo("Controller Block for the Water Pump")
             .addInfo("Pumps Water based on humidity")
             .addInfo("Has 2 tiers: Bronze and Steel")
             .addInfo("Steel tier extracts 2x Water")
@@ -255,7 +253,6 @@ public class MTESteamWaterPump extends MTESteamMultiBase<MTESteamWaterPump> impl
                     + EnumChatFormatting.RED
                     + " of Steam."
                     + EnumChatFormatting.RESET)
-            .addSeparator()
             .beginStructureBlock(3, 3, 5, false)
             .addOutputHatch(EnumChatFormatting.GOLD + "1" + EnumChatFormatting.GRAY + " Any casing", 1)
             .addStructureInfo(
@@ -267,13 +264,12 @@ public class MTESteamWaterPump extends MTESteamMultiBase<MTESteamWaterPump> impl
             .addStructureInfo("")
             .addStructureInfo(EnumChatFormatting.BLUE + "Tier " + EnumChatFormatting.DARK_PURPLE + 1)
             .addStructureInfo(EnumChatFormatting.GOLD + "10" + EnumChatFormatting.GRAY + " Bronze Frame Box")
-            .addStructureInfo(EnumChatFormatting.GOLD + "10" + EnumChatFormatting.GRAY + " Wooden Casing")
+            .addStructureInfo(EnumChatFormatting.GOLD + "9" + EnumChatFormatting.GRAY + " Wooden Casing")
             .addStructureInfo("")
             .addStructureInfo(EnumChatFormatting.BLUE + "Tier " + EnumChatFormatting.DARK_PURPLE + 2)
             .addStructureInfo(EnumChatFormatting.GOLD + "10" + EnumChatFormatting.GRAY + " Steel Frame Box")
-            .addStructureInfo(EnumChatFormatting.GOLD + "10 " + EnumChatFormatting.GRAY + " Wooden Casing")
-            .addStructureInfo("")
-            .toolTipFinisher(AuthorEvgenWarGold);
+            .addStructureInfo(EnumChatFormatting.GOLD + "9 " + EnumChatFormatting.GRAY + " Wooden Casing")
+            .toolTipFinisher(GTValues.AuthorEvgenWarGold);
         return tt;
     }
 
@@ -376,8 +372,8 @@ public class MTESteamWaterPump extends MTESteamMultiBase<MTESteamWaterPump> impl
 
     @SideOnly(Side.CLIENT)
     @Override
-    protected ResourceLocation getActivitySoundLoop() {
-        return SoundResource.GT_MACHINES_WATER_PUMP_LOOP.resourceLocation;
+    protected SoundResource getActivitySoundLoop() {
+        return SoundResource.GT_MACHINES_WATER_PUMP_LOOP;
     }
 
 }

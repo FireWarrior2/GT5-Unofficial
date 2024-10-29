@@ -1146,29 +1146,7 @@ public class MixerRecipes implements Runnable {
 
         GTValues.RA.stdBuilder()
             .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
-                new ItemStack(Items.wheat, 4, 32767),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
                 new ItemStack(Blocks.dirt, 1, 32767),
-                getModItem(BiomesOPlenty.ID, "plants", 4, 6),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
                 getModItem(BiomesOPlenty.ID, "plants", 4, 6),
                 GTUtility.getIntegratedCircuit(2))
             .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
@@ -1190,29 +1168,7 @@ public class MixerRecipes implements Runnable {
 
         GTValues.RA.stdBuilder()
             .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
-                getModItem(PamsHarvestCraft.ID, "oatsItem", 4),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
                 new ItemStack(Blocks.dirt, 1, 32767),
-                getModItem(PamsHarvestCraft.ID, "ryeItem", 4),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
                 getModItem(PamsHarvestCraft.ID, "ryeItem", 4),
                 GTUtility.getIntegratedCircuit(2))
             .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
@@ -1234,17 +1190,6 @@ public class MixerRecipes implements Runnable {
 
         GTValues.RA.stdBuilder()
             .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
-                getModItem(PamsHarvestCraft.ID, "barleyItem", 4, 6),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
                 new ItemStack(Blocks.dirt, 1, 32767),
                 getModItem(Natura.ID, "barleyFood", 4),
                 GTUtility.getIntegratedCircuit(2))
@@ -1256,29 +1201,7 @@ public class MixerRecipes implements Runnable {
 
         GTValues.RA.stdBuilder()
             .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
-                getModItem(Natura.ID, "barleyFood", 4),
-                GTUtility.getIntegratedCircuit(2))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
                 new ItemStack(Blocks.dirt, 1, 32767),
-                GTOreDictUnificator.get(OrePrefixes.dust, Materials.Ash, 4),
-                GTUtility.getIntegratedCircuit(3))
-            .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
-            .fluidInputs(Materials.Water.getFluid(100))
-            .duration(10 * SECONDS)
-            .eut(16)
-            .addTo(mixerRecipes);
-
-        GTValues.RA.stdBuilder()
-            .itemInputs(
-                new ItemStack(Blocks.dirt, 1, 2),
                 GTOreDictUnificator.get(OrePrefixes.dust, Materials.Ash, 4),
                 GTUtility.getIntegratedCircuit(3))
             .itemOutputs(getModItem(Forestry.ID, "fertilizerBio", 1L, 0))
@@ -1538,18 +1461,6 @@ public class MixerRecipes implements Runnable {
                 .addTo(mixerRecipes);
 
             GTValues.RA.stdBuilder()
-                .itemInputs(
-                    EnumCube.COKE_BLOCK.getItem(4),
-                    ItemList.SFMixture.get(8),
-                    GTOreDictUnificator.get(OrePrefixes.dust, Materials.Diamond, 1),
-                    GTUtility.getIntegratedCircuit(1))
-                .itemOutputs(ItemList.Block_SSFUEL.get(4))
-                .fluidInputs(Materials.NitroFuel.getFluid(1200))
-                .duration(10 * SECONDS)
-                .eut(TierEU.RECIPE_HV)
-                .addTo(mixerRecipes);
-
-            GTValues.RA.stdBuilder()
                 .itemInputs(EnumCube.COKE_BLOCK.getItem(), ItemList.SFMixture.get(2), GTUtility.getIntegratedCircuit(1))
                 .itemOutputs(ItemList.Block_SSFUEL.get(1))
                 .fluidInputs(Materials.GasolinePremium.getFluid(120))
@@ -1693,7 +1604,7 @@ public class MixerRecipes implements Runnable {
                     MaterialsUEVplus.DimensionallyTranscendentExoticCatalyst.getFluid(1000L),
                     Materials.Lead.getPlasma(1000),
                     Materials.Thorium.getPlasma(1000),
-                    Materials.Plutonium241.getPlasma(1000L),
+                    Materials.Naquadria.getPlasma(1000L),
                     MaterialsUEVplus.RawStarMatter.getFluid(25L))
                 .fluidOutputs(MaterialsUEVplus.DimensionallyTranscendentStellarCatalyst.getFluid(1000L))
                 .duration(41 * MINUTES + 40 * SECONDS)

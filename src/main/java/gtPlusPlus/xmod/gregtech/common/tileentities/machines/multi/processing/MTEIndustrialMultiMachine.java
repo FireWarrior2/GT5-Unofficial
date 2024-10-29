@@ -11,7 +11,7 @@ import static gregtech.api.enums.HatchElement.Muffler;
 import static gregtech.api.enums.HatchElement.OutputBus;
 import static gregtech.api.enums.HatchElement.OutputHatch;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,6 +33,8 @@ import net.minecraft.world.World;
 import net.minecraftforge.common.util.ForgeDirection;
 import net.minecraftforge.fluids.FluidStack;
 
+import org.jetbrains.annotations.NotNull;
+
 import com.gtnewhorizon.structurelib.alignment.constructable.ISurvivalConstructable;
 import com.gtnewhorizon.structurelib.structure.IStructureDefinition;
 import com.gtnewhorizon.structurelib.structure.ISurvivalBuildEnvironment;
@@ -51,16 +53,17 @@ import gregtech.api.recipe.RecipeMap;
 import gregtech.api.recipe.RecipeMaps;
 import gregtech.api.recipe.check.CheckRecipeResult;
 import gregtech.api.recipe.check.CheckRecipeResultRegistry;
+import gregtech.api.recipe.metadata.CompressionTierKey;
 import gregtech.api.util.GTLanguageManager;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
 import gregtech.api.util.MultiblockTooltipBuilder;
+import gregtech.common.pollution.PollutionConfig;
 import gregtech.common.tileentities.machines.IDualInputHatch;
 import gregtech.common.tileentities.machines.IDualInputInventory;
 import gregtech.common.tileentities.machines.MTEHatchCraftingInputME;
 import gregtech.common.tileentities.machines.MTEHatchInputME;
 import gtPlusPlus.core.block.ModBlocks;
-import gtPlusPlus.core.lib.GTPPCore;
 import gtPlusPlus.core.util.minecraft.PlayerUtils;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.MTEHatchSolidifier;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase;
@@ -126,7 +129,6 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
 
         MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType(getMachineType())
-            .addInfo("Controller Block for the Industrial Multi-Machine")
             .addInfo(EnumChatFormatting.RED + "DEPRECATED! This machine will be removed in the next major update.")
             .addInfo(EnumChatFormatting.RED + "A variety of multiblocks have been added to replace these machines!")
             .addInfo("250% faster than using single block machines of the same voltage")
@@ -140,7 +142,6 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
                 EnumChatFormatting.AQUA + "You can use Solidifier Hatch to solidify multiple liquids."
                     + EnumChatFormatting.RESET)
             .addPollutionAmount(getPollutionPerSecond(null))
-            .addSeparator()
             .beginStructureBlock(3, 3, 3, true)
             .addController("Front Center")
             .addCasingInfoMin("Multi-Use Casings", 6, false)
@@ -151,7 +152,7 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
             .addEnergyHatch("Any Casing", 1)
             .addMaintenanceHatch("Any Casing", 1)
             .addMufflerHatch("Any Casing", 1)
-            .toolTipFinisher(GTPPCore.GT_Tooltip_Builder.get());
+            .toolTipFinisher();
         return tt;
     }
 
@@ -221,13 +222,13 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
     public int getPollutionPerSecond(final ItemStack aStack) {
         switch (machineMode) {
             case MACHINEMODE_METAL -> {
-                return GTPPCore.ConfigSwitches.pollutionPerSecondMultiIndustrialMultiMachine_ModeMetal;
+                return PollutionConfig.pollutionPerSecondMultiIndustrialMultiMachine_ModeMetal;
             }
             case MACHINEMODE_FLUID -> {
-                return GTPPCore.ConfigSwitches.pollutionPerSecondMultiIndustrialMultiMachine_ModeFluid;
+                return PollutionConfig.pollutionPerSecondMultiIndustrialMultiMachine_ModeFluid;
             }
             default -> {
-                return GTPPCore.ConfigSwitches.pollutionPerSecondMultiIndustrialMultiMachine_ModeMisc;
+                return PollutionConfig.pollutionPerSecondMultiIndustrialMultiMachine_ModeMisc;
             }
         }
     }
@@ -335,6 +336,14 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
                     return Stream.empty();
                 }
                 return super.findRecipeMatches(foundMap);
+            }
+
+            @NotNull
+            @Override
+            protected CheckRecipeResult validateRecipe(@NotNull GTRecipe recipe) {
+                if (recipe.getMetadataOrDefault(CompressionTierKey.INSTANCE, 0) > 0)
+                    return CheckRecipeResultRegistry.NO_RECIPE;
+                return super.validateRecipe(recipe);
             }
         }.setSpeedBonus(1F / 3.5F)
             .setEuModifier(0.8F)
@@ -460,7 +469,7 @@ public class MTEIndustrialMultiMachine extends GTPPMultiBlockBase<MTEIndustrialM
     @Override
     public ArrayList<FluidStack> getStoredFluids() {
         ArrayList<FluidStack> rList = new ArrayList<>();
-        for (MTEHatchInput tHatch : filterValidMTEs(mInputHatches)) {
+        for (MTEHatchInput tHatch : validMTEList(mInputHatches)) {
             if (tHatch instanceof MTEHatchSolidifier) {
                 continue;
             }

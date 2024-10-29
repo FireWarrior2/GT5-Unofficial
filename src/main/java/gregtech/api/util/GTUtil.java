@@ -1,6 +1,7 @@
 package gregtech.api.util;
 
 import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -319,10 +320,10 @@ public class GTUtil {
             tag.getTagList("mDualInputHatches", Constants.NBT.TAG_COMPOUND),
             player,
             dualInputHatches)) {
-            if (!loadConfigurationFromDataStick(
+            return loadConfigurationFromDataStick(
                 tag.getTagList("mDualInputHatches", Constants.NBT.TAG_COMPOUND),
                 player,
-                dualInputHatches)) return false;
+                dualInputHatches);
         }
 
         return true;
@@ -330,7 +331,7 @@ public class GTUtil {
 
     private static NBTTagList saveConfigurationToDataStick(EntityPlayer player, List<? extends MTEHatch> hatches) {
         NBTTagList list = new NBTTagList();
-        for (MTEHatch tHatch : filterValidMTEs(hatches)) {
+        for (MTEHatch tHatch : validMTEList(hatches)) {
             if (!(tHatch instanceof IDataCopyable copyable)) {
                 list.appendTag(new NBTTagCompound());
                 continue;

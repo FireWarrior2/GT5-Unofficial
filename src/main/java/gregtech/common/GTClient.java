@@ -92,6 +92,8 @@ import gregtech.client.GTMouseEventHandler;
 import gregtech.client.SeekingOggCodec;
 import gregtech.common.blocks.BlockFrameBox;
 import gregtech.common.blocks.ItemMachines;
+import gregtech.common.pollution.Pollution;
+import gregtech.common.pollution.PollutionRenderer;
 import gregtech.common.render.BlackholeRenderer;
 import gregtech.common.render.DroneRender;
 import gregtech.common.render.FlaskRenderer;
@@ -101,8 +103,9 @@ import gregtech.common.render.GTRendererBlock;
 import gregtech.common.render.LaserRenderer;
 import gregtech.common.render.MetaGeneratedToolRenderer;
 import gregtech.common.render.MultiTileRenderer;
-import gregtech.common.render.PollutionRenderer;
 import gregtech.common.render.WormholeRenderer;
+import gregtech.common.render.items.DataStickRenderer;
+import gregtech.common.render.items.InfiniteSprayCanRenderer;
 import gregtech.common.render.items.MetaGeneratedItemRenderer;
 import gregtech.common.tileentities.debug.MTEAdvDebugStructureWriter;
 import gregtech.loaders.ExtraIcons;
@@ -645,6 +648,8 @@ public class GTClient extends GTProxy implements Runnable {
         new MetaGeneratedToolRenderer();
         new FlaskRenderer();
         new FluidDisplayStackRenderer();
+        new DataStickRenderer();
+        new InfiniteSprayCanRenderer();
         MinecraftForge.EVENT_BUS.register(new NEIGTConfig());
         MinecraftForge.EVENT_BUS.register(new GTMouseEventHandler());
     }
@@ -666,6 +671,7 @@ public class GTClient extends GTProxy implements Runnable {
                         .forEach(CoverBehaviorBase::reloadColorOverride);
                 }
             });
+        Pollution.onPostInitClient();
     }
 
     @Override
@@ -779,7 +785,7 @@ public class GTClient extends GTProxy implements Runnable {
 
     @SubscribeEvent
     public void onConfigChange(ConfigChangedEvent.OnConfigChangedEvent e) {
-        if (GregTech.ID.equals(e.modID) && "client".equals(e.configID)) {
+        if (GregTech.ID.equals(e.modID)) {
             // refresh client preference and send to server, since it's the only config we allow changing at runtime.
             mPreference = new GTClientPreference();
             GTPreLoad.loadClientConfig();

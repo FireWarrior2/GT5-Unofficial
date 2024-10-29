@@ -1489,6 +1489,8 @@ public enum ItemList implements IItemContainer {
     Casing_Fluid_Solidifier,
     Radiator_Fluid_Solidifier,
 
+    Casing_Reinforced_Wood,
+
     Machine_Multi_IndustrialCompressor,
     Machine_Multi_HIPCompressor,
     Machine_Multi_NeutroniumCompressor,
@@ -1505,6 +1507,8 @@ public enum ItemList implements IItemContainer {
     Hawking_Glass,
     Black_Hole_Opener,
     Black_Hole_Closer,
+
+    Machine_Multi_IndustrialBrewery,
 
     Machine_Multi_IndustrialLaserEngraver,
     Laser_Plate,
@@ -1673,11 +1677,6 @@ public enum ItemList implements IItemContainer {
     Pump_LV,
     Pump_MV,
     Pump_HV,
-    Pump_EV,
-    Pump_IV,
-    Pump_LuV,
-    Pump_ZPM,
-    Pump_UV,
 
     Teleporter,
     Cover_NeedsMaintainance,
@@ -2554,8 +2553,6 @@ public enum ItemList implements IItemContainer {
     WiremillUEV,
     WiremillUIV,
     WiremillUMV,
-    PumpLuV,
-    PumpZPM,
     Automation_ChestBuffer_UEV,
     Automation_ChestBuffer_UIV,
     Automation_ChestBuffer_UMV,
@@ -2720,7 +2717,7 @@ public enum ItemList implements IItemContainer {
         StringBuilder tCamelCasedDisplayNameBuilder = new StringBuilder();
         final String[] tDisplayNameWords = aDisplayName.split("\\W");
         for (String tWord : tDisplayNameWords) {
-            if (tWord.length() > 0) tCamelCasedDisplayNameBuilder.append(
+            if (!tWord.isEmpty()) tCamelCasedDisplayNameBuilder.append(
                 tWord.substring(0, 1)
                     .toUpperCase(Locale.US));
             if (tWord.length() > 1) tCamelCasedDisplayNameBuilder.append(

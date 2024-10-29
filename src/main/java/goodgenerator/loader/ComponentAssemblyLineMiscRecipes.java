@@ -33,7 +33,6 @@ import net.minecraftforge.fluids.FluidStack;
 
 import bartworks.system.material.WerkstoffLoader;
 import cpw.mods.fml.common.registry.GameRegistry;
-import goodgenerator.items.GGMaterial;
 import goodgenerator.util.StackUtils;
 import gregtech.api.enums.GTValues;
 import gregtech.api.enums.ItemList;
@@ -76,7 +75,7 @@ public class ComponentAssemblyLineMiscRecipes {
                 ComponentType.Electric_Motor.getComponent(7)
                     .get(32),
                 GTOreDictUnificator.get(OrePrefixes.pipeMedium, Materials.Polybenzimidazole, 16),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Iridium, 32),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Iridium, 4),
                 ItemList.FluidSolidifierZPM.get(16L),
                 getALCircuit(8, 16),
                 getALCircuit(7, 20),
@@ -235,7 +234,7 @@ public class ComponentAssemblyLineMiscRecipes {
             .metadata(RESEARCH_TIME, (2250 << t) * TICKS)
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Iridium, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Iridium, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Iridium, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -264,7 +263,7 @@ public class ComponentAssemblyLineMiscRecipes {
             .metadata(RESEARCH_TIME, (2250 << t) * TICKS)
             .itemInputs(
                 GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Osmium, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Osmium, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Osmium, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -294,7 +293,7 @@ public class ComponentAssemblyLineMiscRecipes {
             (int) TierEU.RECIPE_UV,
             1,
             new Object[] { GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.CosmicNeutronium, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.CosmicNeutronium, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.CosmicNeutronium, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -320,7 +319,7 @@ public class ComponentAssemblyLineMiscRecipes {
             (int) TierEU.RECIPE_UHV,
             1,
             new Object[] { GTOreDictUnificator.get(OrePrefixes.frameGt, Materials.Infinity, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, Materials.Infinity, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.Infinity, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -345,7 +344,7 @@ public class ComponentAssemblyLineMiscRecipes {
             (int) TierEU.RECIPE_UEV,
             1,
             new Object[] { GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.ProtoHalkonite, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.TranscendentMetal, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.TranscendentMetal, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -371,7 +370,7 @@ public class ComponentAssemblyLineMiscRecipes {
             (int) TierEU.RECIPE_UIV,
             1,
             new Object[] { GTOreDictUnificator.get(OrePrefixes.frameGt, MaterialsUEVplus.SpaceTime, 1),
-                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.SpaceTime, 6),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, MaterialsUEVplus.SpaceTime, 1),
                 ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
@@ -401,7 +400,8 @@ public class ComponentAssemblyLineMiscRecipes {
                     .get(OrePrefixes.frameGt, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 1),
                 GTOreDictUnificator
                     .get(OrePrefixes.plateDense, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 3),
-                GGMaterial.shirabon.get(OrePrefixes.plateDense, 3), ComponentType.Robot_Arm.getComponent(t)
+                GTOreDictUnificator.get(OrePrefixes.plateDense, MaterialsUEVplus.MagMatter, 3),
+                ComponentType.Robot_Arm.getComponent(t)
                     .get(8),
                 ComponentType.Electric_Piston.getComponent(t)
                     .get(10),
@@ -409,12 +409,11 @@ public class ComponentAssemblyLineMiscRecipes {
                     .get(16),
                 GTOreDictUnificator
                     .get(OrePrefixes.gearGt, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 2),
-                GGMaterial.shirabon.get(OrePrefixes.gearGt, 2),
+                GTOreDictUnificator.get(OrePrefixes.gearGt, MaterialsUEVplus.MagMatter, 2),
                 GTOreDictUnificator
                     .get(OrePrefixes.gearGtSmall, MaterialsUEVplus.MagnetohydrodynamicallyConstrainedStarMatter, 8),
-                GGMaterial.shirabon.get(OrePrefixes.gearGtSmall, 8),
-                GTOreDictUnificator.get(OrePrefixes.wireGt04, Materials.Infinity, 4),
-                GTOreDictUnificator.get(OrePrefixes.wireGt04, MaterialsUEVplus.SpaceTime, 4), getALCircuit(t, 8),
+                GTOreDictUnificator.get(OrePrefixes.gearGtSmall, MaterialsUEVplus.MagMatter, 8),
+                GTOreDictUnificator.get(OrePrefixes.wireGt04, MaterialsUEVplus.SpaceTime, 8), getALCircuit(t, 8),
                 getALCircuit(t - 1, 16) },
             new FluidStack[] { new FluidStack(sold, 144 * t * 4),
                 MaterialsUEVplus.BlackDwarfMatter.getMolten(144 * t * 2), MaterialsUEVplus.Eternity.getMolten(144 * t),

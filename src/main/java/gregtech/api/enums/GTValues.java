@@ -524,7 +524,6 @@ public class GTValues {
     public static boolean alwaysReloadChunkloaders = false;
 
     public static boolean debugChunkloaders = false;
-    public static boolean cls_enabled;
     public static final Set<String> mCTMEnabledBlock = new HashSet<>();
     public static final Set<String> mCTMDisabledBlock = new HashSet<>();
 
@@ -651,7 +650,7 @@ public class GTValues {
         + EnumChatFormatting.WHITE
         + EnumChatFormatting.ITALIC
         + "Number";
-    public static final String Ollie = "" + EnumChatFormatting.GREEN + EnumChatFormatting.BOLD + "Ollie";
+    public static final String Ollie = EnumChatFormatting.GREEN.toString() + EnumChatFormatting.BOLD + "Ollie";
     public static final String authorBaps = "Author: " + EnumChatFormatting.GOLD
         + "Ba"
         + EnumChatFormatting.LIGHT_PURPLE
@@ -683,6 +682,8 @@ public class GTValues {
         + EnumChatFormatting.AQUA
         + EnumChatFormatting.BOLD
         + "APenguin";
+
+    public static final String AuthorPineapple = "Author: " + EnumChatFormatting.BLUE + "Recursive Pineapple";
 
     // 7.5F comes from GT_Tool_Turbine_Large#getBaseDamage() given huge turbines are the most efficient now.
     public static double getMaxPlasmaTurbineEfficiencyFromMaterial(Materials material) {

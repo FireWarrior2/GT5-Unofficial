@@ -48,9 +48,9 @@ import gregtech.api.recipe.check.CheckRecipeResultRegistry;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.MultiblockTooltipBuilder;
 import gregtech.api.util.OverclockCalculator;
+import gregtech.common.pollution.PollutionConfig;
 import gtPlusPlus.api.recipe.GTPPRecipeMaps;
 import gtPlusPlus.core.block.ModBlocks;
-import gtPlusPlus.core.lib.GTPPCore;
 import gtPlusPlus.core.util.minecraft.PlayerUtils;
 import gtPlusPlus.xmod.gregtech.api.metatileentity.implementations.base.GTPPMultiBlockBase;
 import gtPlusPlus.xmod.gregtech.common.blocks.textures.TexturesGtBlock;
@@ -61,7 +61,7 @@ public class MTEIndustrialDehydrator extends GTPPMultiBlockBase<MTEIndustrialDeh
     implements ISurvivalConstructable {
 
     private static int CASING_TEXTURE_ID;
-    private static String mCasingName = "Vacuum Casing";
+    private static final String mCasingName = "Vacuum Casing";
     private HeatingCoilLevel mHeatingCapacity;
     private boolean mDehydratorMode = false;
     private int mCasing;
@@ -94,7 +94,6 @@ public class MTEIndustrialDehydrator extends GTPPMultiBlockBase<MTEIndustrialDeh
             .addInfo("Each 1800K over the min. Heat Capacity allows for one upgraded overclock")
             .addInfo("Upgraded overclocks reduce recipe time to 25% and increase EU/t to 400%")
             .addPollutionAmount(getPollutionPerSecond(null))
-            .addSeparator()
             .beginStructureBlock(3, 5, 3, true)
             .addController("Bottom Center")
             .addCasingInfoMin(mCasingName, 5, false)
@@ -105,7 +104,7 @@ public class MTEIndustrialDehydrator extends GTPPMultiBlockBase<MTEIndustrialDeh
             .addEnergyHatch("Any Casing", 1)
             .addMaintenanceHatch("Any Casing", 1)
             .addMufflerHatch("Any Casing", 1)
-            .toolTipFinisher(GTPPCore.GT_Tooltip_Builder.get());
+            .toolTipFinisher();
         return tt;
     }
 
@@ -187,7 +186,7 @@ public class MTEIndustrialDehydrator extends GTPPMultiBlockBase<MTEIndustrialDeh
 
     @Override
     public int getPollutionPerSecond(ItemStack aStack) {
-        return GTPPCore.ConfigSwitches.pollutionPerSecondMultiIndustrialDehydrator;
+        return PollutionConfig.pollutionPerSecondMultiIndustrialDehydrator;
     }
 
     @Override

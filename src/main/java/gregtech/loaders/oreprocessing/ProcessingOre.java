@@ -36,6 +36,10 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
     @Override
     public void registerOre(OrePrefixes aPrefix, Materials aMaterial, String aOreDictName, String aModName,
         ItemStack aStack) {
+        if (aMaterial.contains(SubTag.NO_ORE_PROCESSING)) {
+            return;
+        }
+
         boolean tIsRich = false;
 
         // For Sake of god of balance!
@@ -147,7 +151,8 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
                             GTOreDictUnificator.get(OrePrefixes.dust, Materials.Calcite, aMultiplier))
                         .itemOutputs(
                             GTUtility.mul(aMultiplier * 3 * aMaterial.mSmeltingMultiplier, tSmeltInto),
-                            GTOreDictUnificator.get(OrePrefixes.dustSmall, Materials.DarkAsh, 1L))
+                            GTOreDictUnificator.get(OrePrefixes.dust, Materials.DarkAsh, 1L))
+                        .outputChances(10000, 2500)
                         .duration(tSmeltInto.stackSize * 25 * SECONDS)
                         .eut(TierEU.RECIPE_MV)
                         .metadata(COIL_HEAT, 1500)
@@ -158,7 +163,8 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
                             GTOreDictUnificator.get(OrePrefixes.dust, Materials.Quicklime, aMultiplier))
                         .itemOutputs(
                             GTUtility.mul(aMultiplier * 3 * aMaterial.mSmeltingMultiplier, tSmeltInto),
-                            GTOreDictUnificator.get(OrePrefixes.dustSmall, Materials.DarkAsh, 1L))
+                            GTOreDictUnificator.get(OrePrefixes.dust, Materials.DarkAsh, 1L))
+                        .outputChances(10000, 2500)
                         .duration(tSmeltInto.stackSize * 25 * SECONDS)
                         .eut(TierEU.RECIPE_MV)
                         .metadata(COIL_HEAT, 1500)
@@ -172,7 +178,8 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
                             GTOreDictUnificator.get(OrePrefixes.dust, Materials.Calcite, aMultiplier))
                         .itemOutputs(
                             GTUtility.mul(aMultiplier * 2 * aMaterial.mSmeltingMultiplier, tSmeltInto),
-                            GTOreDictUnificator.get(OrePrefixes.dustSmall, Materials.DarkAsh, 1L))
+                            GTOreDictUnificator.get(OrePrefixes.dust, Materials.DarkAsh, 1L))
+                        .outputChances(10000, 2500)
                         .duration(tSmeltInto.stackSize * 25 * SECONDS)
                         .eut(TierEU.RECIPE_MV)
                         .metadata(COIL_HEAT, 1500)
@@ -183,7 +190,8 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
                             GTOreDictUnificator.get(OrePrefixes.dust, Materials.Quicklime, aMultiplier))
                         .itemOutputs(
                             GTUtility.mul(aMultiplier * 2 * aMaterial.mSmeltingMultiplier, tSmeltInto),
-                            GTOreDictUnificator.get(OrePrefixes.dustSmall, Materials.DarkAsh, 1L))
+                            GTOreDictUnificator.get(OrePrefixes.dust, Materials.DarkAsh, 1L))
+                        .outputChances(10000, 2500)
                         .duration(tSmeltInto.stackSize * 25 * SECONDS)
                         .eut(TierEU.RECIPE_MV)
                         .metadata(COIL_HEAT, 1500)
@@ -201,7 +209,7 @@ public class ProcessingOre implements gregtech.api.interfaces.IOreRecipeRegistra
                     Math.max(1, aMultiplier * aMaterial.mSmeltingMultiplier / 2)));
         }
 
-        if (tCrushed != null) {
+        if (tCrushed != null && aMaterial != Materials.Knightmetal) {
             GTValues.RA.stdBuilder()
                 .itemInputs(aOreStack)
                 .itemOutputs(GTUtility.copy(GTUtility.copyAmount(tCrushed.stackSize, tGem), tCrushed))

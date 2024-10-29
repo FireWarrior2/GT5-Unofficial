@@ -53,7 +53,8 @@ public class NaniteChain {
                 ItemList.Conveyor_Module_UV.get(16),
                 ItemList.Electric_Motor_UV.get(32),
                 new Object[] { OrePrefixes.circuit.get(Materials.LuV), 16 },
-                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Naquadah, 32))
+                GTOreDictUnificator.get(OrePrefixes.wireGt08, Materials.Naquadah, 32),
+                GTOreDictUnificator.get(OrePrefixes.plateSuperdense, Materials.NaquadahAlloy, 4))
             .fluidInputs(
                 new FluidStack(solderIndalloy, 144 * 32),
                 Materials.HSSS.getMolten(144L * 32),
@@ -262,5 +263,23 @@ public class NaniteChain {
             .eut(TierEU.RECIPE_MAX)
             .addTo(nanoForgeRecipes);
 
+        // MagMatter nanites, currently only used in the production of Stargates.
+        GTValues.RA.stdBuilder()
+            .itemInputs(
+                GTOreDictUnificator.get(OrePrefixes.lens, Materials.Forcicium, 0, false),
+                GTOreDictUnificator.get(OrePrefixes.lens, Materials.Forcillium, 0, false),
+                MaterialsUEVplus.Universium.getNanite(1),
+                MaterialsUEVplus.MagMatter.getBlocks(8),
+                getModItem(NewHorizonsCoreMod.ID, "item.PicoWafer", 64),
+                GTOreDictUnificator.get(OrePrefixes.circuit, Materials.UXV, 1))
+            .itemOutputs(MaterialsUEVplus.MagMatter.getNanite(1))
+            .fluidInputs(
+                MaterialsUEVplus.QuarkGluonPlasma.getFluid(100_000),
+                MaterialsUEVplus.PhononMedium.getFluid(64_000),
+                MaterialsUEVplus.PrimordialMatter.getFluid(128_000))
+            .metadata(NANO_FORGE_TIER, 3)
+            .duration(16 * MINUTES + 40 * SECONDS)
+            .eut(TierEU.RECIPE_MAX)
+            .addTo(nanoForgeRecipes);
     }
 }

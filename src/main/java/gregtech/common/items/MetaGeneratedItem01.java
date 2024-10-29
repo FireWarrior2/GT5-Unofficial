@@ -500,7 +500,7 @@ import gregtech.api.util.GTModHandler;
 import gregtech.api.util.GTOreDictUnificator;
 import gregtech.api.util.GTRecipe;
 import gregtech.api.util.GTUtility;
-import gregtech.common.config.other.ConfigGeneral;
+import gregtech.common.config.Other;
 import gregtech.common.covers.CoverArm;
 import gregtech.common.covers.CoverChest;
 import gregtech.common.covers.CoverControlsWork;
@@ -2107,10 +2107,26 @@ public class MetaGeneratedItem01 extends MetaGeneratedItemX32 {
                 FluidRegulator_UEV.ID,
                 "Fluid Regulator (UEV)",
                 FRText1 + GTUtility.formatNumbers(2097152 * 20) + FRText2));
-        ItemList.FluidRegulator_UIV.set(addItem(FluidRegulator_UIV.ID, "Fluid Regulator (UIV)", PartNotCoverText));
-        ItemList.FluidRegulator_UMV.set(addItem(FluidRegulator_UMV.ID, "Fluid Regulator (UMV)", PartNotCoverText));
-        ItemList.FluidRegulator_UXV.set(addItem(FluidRegulator_UXV.ID, "Fluid Regulator (UXV)", PartNotCoverText));
-        ItemList.Electric_Pump_MAX.set(addItem(FluidRegulator_MAX.ID, "Fluid Regulator (MAX)", PartNotCoverText));
+        ItemList.FluidRegulator_UIV.set(
+            addItem(
+                FluidRegulator_UIV.ID,
+                "Fluid Regulator (UIV)",
+                FRText1 + GTUtility.formatNumbers(4194304 * 20) + FRText2));
+        ItemList.FluidRegulator_UMV.set(
+            addItem(
+                FluidRegulator_UMV.ID,
+                "Fluid Regulator (UMV)",
+                FRText1 + GTUtility.formatNumbers(8388608 * 20) + FRText2));
+        ItemList.FluidRegulator_UXV.set(
+            addItem(
+                FluidRegulator_UXV.ID,
+                "Fluid Regulator (UXV)",
+                FRText1 + GTUtility.formatNumbers(16777216 * 20) + FRText2));
+        ItemList.FluidRegulator_MAX.set(
+            addItem(
+                FluidRegulator_MAX.ID,
+                "Fluid Regulator (MAX)",
+                FRText1 + GTUtility.formatNumbers(33554432 * 20) + FRText2));
 
         ItemList.FluidFilter.set(
             addItem(FluidFilter.ID, "Fluid Filter Cover", "Set with Fluid Container to only accept one Fluid Type"));
@@ -3462,6 +3478,7 @@ public class MetaGeneratedItem01 extends MetaGeneratedItemX32 {
         setAllFluidContainerStats();
         setAllElectricStats();
         registerTieredTooltips();
+        registerSubIcons();
 
         craftingShapedRecipes();
         craftingShapelessRecipes();
@@ -3739,6 +3756,22 @@ public class MetaGeneratedItem01 extends MetaGeneratedItemX32 {
             ItemList.FluidRegulator_UEV.get(1L),
             TextureFactory.of(MACHINE_CASINGS[10][0], TextureFactory.of(OVERLAY_PUMP)),
             new CoverFluidRegulator(2097152, TextureFactory.of(OVERLAY_PUMP)));
+        GregTechAPI.registerCover(
+            ItemList.FluidRegulator_UIV.get(1L),
+            TextureFactory.of(MACHINE_CASINGS[11][0], TextureFactory.of(OVERLAY_PUMP)),
+            new CoverFluidRegulator(4194304, TextureFactory.of(OVERLAY_PUMP)));
+        GregTechAPI.registerCover(
+            ItemList.FluidRegulator_UMV.get(1L),
+            TextureFactory.of(MACHINE_CASINGS[12][0], TextureFactory.of(OVERLAY_PUMP)),
+            new CoverFluidRegulator(8388608, TextureFactory.of(OVERLAY_PUMP)));
+        GregTechAPI.registerCover(
+            ItemList.FluidRegulator_UXV.get(1L),
+            TextureFactory.of(MACHINE_CASINGS[12][0], TextureFactory.of(OVERLAY_PUMP)),
+            new CoverFluidRegulator(16777216, TextureFactory.of(OVERLAY_PUMP)));
+        GregTechAPI.registerCover(
+            ItemList.FluidRegulator_MAX.get(1L),
+            TextureFactory.of(MACHINE_CASINGS[13][0], TextureFactory.of(OVERLAY_PUMP)),
+            new CoverFluidRegulator(33554432, TextureFactory.of(OVERLAY_PUMP)));
 
         GregTechAPI.registerCover(
             ItemList.FluidFilter.get(1L),
@@ -4585,7 +4618,7 @@ public class MetaGeneratedItem01 extends MetaGeneratedItemX32 {
                 ItemList.Spray_Empty.get(1L),
                 ItemList.SPRAY_CAN_DYES_USED[i].get(1L),
                 ItemList.SPRAY_CAN_DYES[i].get(1L),
-                ConfigGeneral.sprayCanUses,
+                Other.sprayCanUses,
                 i);
             addItemBehavior(32000 + Spray_Colors[i], behaviourSprayColor);
             addItemBehavior(32000 + Spray_Colors_Used[i], behaviourSprayColor);
@@ -4632,6 +4665,10 @@ public class MetaGeneratedItem01 extends MetaGeneratedItemX32 {
         setElectricStats(32000 + BatteryHull_UIV_Full.ID, 104857600000L, GTValues.V[11], 11L, -3L, true);
         setElectricStats(32000 + BatteryHull_UMV_Full.ID, 419430400000L, GTValues.V[12], 12L, -3L, true);
         setElectricStats(32000 + BatteryHull_UxV_Full.ID, 1677721600000L, GTValues.V[13], 13L, -3L, true);
+    }
+
+    private void registerSubIcons() {
+        setSubIcons(Spray_Color_Infinite.ID, 3);
     }
 
     private void registerTieredTooltips() {

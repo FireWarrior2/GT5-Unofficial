@@ -7,7 +7,7 @@ import static com.gtnewhorizon.structurelib.structure.StructureUtility.ofBlock;
 import static com.gtnewhorizon.structurelib.structure.StructureUtility.transpose;
 import static gregtech.api.enums.HatchElement.*;
 import static gregtech.api.util.GTStructureUtility.*;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 
@@ -45,7 +45,7 @@ public abstract class MTELargeTurbineBase extends MTEEnhancedMultiBlockBase<MTEL
     implements ISurvivalConstructable {
 
     private static final String STRUCTURE_PIECE_MAIN = "main";
-    private static final ClassValue<IStructureDefinition<MTELargeTurbineBase>> STRUCTURE_DEFINITION = new ClassValue<IStructureDefinition<MTELargeTurbineBase>>() {
+    private static final ClassValue<IStructureDefinition<MTELargeTurbineBase>> STRUCTURE_DEFINITION = new ClassValue<>() {
 
         @Override
         protected IStructureDefinition<MTELargeTurbineBase> computeValue(Class<?> type) {
@@ -229,7 +229,7 @@ public abstract class MTELargeTurbineBase extends MTEEnhancedMultiBlockBase<MTEL
 
     public long getMaximumOutput() {
         long aTotal = 0;
-        for (MTEHatchDynamo aDynamo : filterValidMTEs(mDynamoHatches)) {
+        for (MTEHatchDynamo aDynamo : validMTEList(mDynamoHatches)) {
             long aVoltage = aDynamo.maxEUOutput();
             aTotal = aDynamo.maxAmperesOut() * aVoltage;
             break;
@@ -240,7 +240,7 @@ public abstract class MTELargeTurbineBase extends MTEEnhancedMultiBlockBase<MTEL
     @Override
     public String[] getInfoData() {
         int mPollutionReduction = 0;
-        for (MTEHatchMuffler tHatch : filterValidMTEs(mMufflerHatches)) {
+        for (MTEHatchMuffler tHatch : validMTEList(mMufflerHatches)) {
             mPollutionReduction = Math.max(tHatch.calculatePollutionReduction(100), mPollutionReduction);
         }
 
@@ -264,13 +264,13 @@ public abstract class MTELargeTurbineBase extends MTEEnhancedMultiBlockBase<MTEL
 
         long storedEnergy = 0;
         long maxEnergy = 0;
-        for (MTEHatchDynamo tHatch : filterValidMTEs(mDynamoHatches)) {
+        for (MTEHatchDynamo tHatch : validMTEList(mDynamoHatches)) {
             storedEnergy += tHatch.getBaseMetaTileEntity()
                 .getStoredEU();
             maxEnergy += tHatch.getBaseMetaTileEntity()
                 .getEUCapacity();
         }
-        String[] ret = new String[] {
+        return new String[] {
             // 8 Lines available for information panels
             tRunning + ": "
                 + EnumChatFormatting.RED
@@ -315,7 +315,6 @@ public abstract class MTELargeTurbineBase extends MTEEnhancedMultiBlockBase<MTEL
                 + EnumChatFormatting.RESET
                 + " %" /* 8 */
         };
-        return ret;
     }
 
     public boolean hasTurbine() {

@@ -19,6 +19,7 @@ import com.gtnewhorizon.gtnhlib.client.renderer.shader.ShaderProgram;
 
 import cpw.mods.fml.client.registry.ClientRegistry;
 import goodgenerator.blocks.tileEntity.render.TileAntimatter;
+import gregtech.GTMod;
 
 public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
@@ -26,11 +27,11 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
     private static ShaderProgram antimatterProgram;
     private static IModelCustom antimatterModel;
     private static IModelCustom containerModel;
+    private static IModelCustom ringModel;
     private static final float modelNormalize = .5f;
 
     private int uColorSpike = -1;
     private int uColorCore = -1;
-    private int uSpikeMult = -1;
     private int uScale = -1;
     private int uScaleSnapshot = -1;
     private int uTime = -1;
@@ -48,6 +49,11 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
     private static final int beamVertexCount = particleCount * 6 * 6;
 
     private boolean initialized = false;
+    private boolean hasFailed = false;
+
+    // Glowy Ring
+    private static ShaderProgram glowProgram;
+    private int uGlowColor = -1;
 
     private static final float[] promomatterVerticies = {
         // Front Face
@@ -71,34 +77,35 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
         ResourceLocation antimatterLocation = new ResourceLocation(
             GoodGenerator.resourceDomain,
             "models/Antimatter.obj");
-        antimatterModel = (IModelCustom) new WavefrontObject(antimatterLocation);
+        antimatterModel = new WavefrontObject(antimatterLocation);
 
         ResourceLocation location = new ResourceLocation(GoodGenerator.resourceDomain, "models/SmoothSphere.obj");
-        containerModel = (IModelCustom) new WavefrontObject(location);
+        containerModel = new WavefrontObject(location);
+
+        ResourceLocation ringLocation = new ResourceLocation(GoodGenerator.resourceDomain, "models/GlowRing.obj");
+        ringModel = new WavefrontObject(ringLocation);
     }
 
     private void init() {
-        antimatterProgram = new ShaderProgram(
-            GoodGenerator.resourceDomain,
-            "shaders/antimatter.vert.glsl",
-            "shaders/antimatter.frag.glsl");
-
-        antimatterProgram.use();
-
         try {
+            antimatterProgram = new ShaderProgram(
+                GoodGenerator.resourceDomain,
+                "shaders/antimatter.vert.glsl",
+                "shaders/antimatter.frag.glsl");
+
             uScale = antimatterProgram.getUniformLocation("u_Scale");
             uScaleSnapshot = antimatterProgram.getUniformLocation("u_ScaleSnapshot");
             uTime = antimatterProgram.getUniformLocation("u_Time");
             uTimeSnapshot = antimatterProgram.getUniformLocation("u_TimeSnapshot");
-            uSpikeMult = antimatterProgram.getUniformLocation("u_SpikeMult");
             uOpacity = antimatterProgram.getUniformLocation("u_Opacity");
             uColorCore = antimatterProgram.getUniformLocation("u_ColorCore");
             uColorSpike = antimatterProgram.getUniformLocation("u_ColorSpike");
-        } catch (NullPointerException e) {
-            System.out.println(e.getMessage());
-            ShaderProgram.clear();
+        } catch (Exception e) {
+            GTMod.GT_FML_LOGGER.error(e.getMessage());
             return;
         }
+
+        antimatterProgram.use();
 
         GL20.glUniform3f(uColorCore, TileAntimatter.coreR, TileAntimatter.coreG, TileAntimatter.coreB);
         GL20.glUniform3f(uColorSpike, TileAntimatter.spikeR, TileAntimatter.spikeG, TileAntimatter.spikeB);
@@ -108,26 +115,27 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
         loadModels();
 
-        protomatterProgram = new ShaderProgram(
-            GoodGenerator.resourceDomain,
-            "shaders/protomatter.vert.glsl",
-            "shaders/protomatter.frag.glsl");
+        int uCubeCount = -1;
+        int uProtomatterVertices = -1;
 
-        int uCubeCount;
-        int uProtomatterVertices;
         try {
+            protomatterProgram = new ShaderProgram(
+                GoodGenerator.resourceDomain,
+                "shaders/protomatter.vert.glsl",
+                "shaders/protomatter.frag.glsl");
+
             uProtomatterVertices = protomatterProgram.getUniformLocation("u_Vertices");
             uCubeCount = protomatterProgram.getUniformLocation("u_CubeCount");
             uProtomatterTime = protomatterProgram.getUniformLocation("u_Time");
             uProtomatterScale = protomatterProgram.getUniformLocation("u_Scale");
             uProtomatterColor = protomatterProgram.getUniformLocation("u_Color");
             uProtomatterSpiralRadius = protomatterProgram.getUniformLocation("u_SpiralRadius");
-        } catch (NullPointerException e) {
-            ShaderProgram.clear();
-            return;
+        } catch (Exception e) {
+            GTMod.GT_FML_LOGGER.error(e.getMessage());
         }
 
         protomatterProgram.use();
+
         FloatBuffer bufferBeamVertexID = BufferUtils.createFloatBuffer(beamVertexCount * 3);
         for (int i = 0; i < beamVertexCount; i++) {
             bufferBeamVertexID.put(i * 3, i);
@@ -142,6 +150,25 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
             .flip();
         GL20.glUniform3(uProtomatterVertices, bufferBeamVertex);
         GL20.glUniform1f(uCubeCount, particleCount);
+
+        ShaderProgram.clear();
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+
+        try {
+            glowProgram = new ShaderProgram(
+                GoodGenerator.resourceDomain,
+                "shaders/glow.vert.glsl",
+                "shaders/glow.frag.glsl");
+
+            uGlowColor = glowProgram.getUniformLocation("u_Color");
+        } catch (Exception e) {
+            GTMod.GT_FML_LOGGER.error(e.getMessage());
+            return;
+        }
+
+        glowProgram.use();
+        GL20.glUniform3f(uGlowColor, 0, 1f, 1f);
+
         ShaderProgram.clear();
 
         initialized = true;
@@ -174,24 +201,22 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
         GL20.glUniform1f(uTime, realTime);
         GL20.glUniform1f(uTimeSnapshot, snapTime);
-        GL20.glUniform1f(uSpikeMult, tile.spikeFactor);
         GL20.glUniform1f(uScale, coreSize);
         GL20.glUniform1f(uScaleSnapshot, coreSizeSnapshot);
         GL11.glDisable(GL11.GL_CULL_FACE);
 
+        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         antimatterModel.renderAll();
 
         ShaderProgram.clear();
 
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glColor3f(0, 0, 0);
-        GL11.glScalef(
-            -coreSize * (1 + tile.spikeFactor),
-            -coreSize * (1 + tile.spikeFactor),
-            -coreSize * (1 + tile.spikeFactor));
+        GL11.glPopMatrix();
+        GL11.glPushMatrix();
+        GL11.glTranslated(x, y, z);
+        GL11.glScalef(-TileAntimatter.maximalRadius, -TileAntimatter.maximalRadius, -TileAntimatter.maximalRadius);
         containerModel.renderAll();
-
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
         GL11.glPopMatrix();
         GL11.glPopAttrib();
     }
@@ -225,6 +250,17 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
     }
 
+    public void renderRing(TileAntimatter tile, double x, double y, double z, float timer) {
+        GL11.glPushMatrix();
+        GL11.glColor3f(0, 1, 1);
+        GL11.glTranslated(x, y, z);
+        glowProgram.use();
+        GL11.glRotatef(tile.rotationAngle, tile.rotX, tile.rotY, tile.rotZ);
+        ringModel.renderAll();
+        ShaderProgram.clear();
+        GL11.glPopMatrix();
+    }
+
     @Override
     public void renderTileEntityAt(TileEntity tile, double x, double y, double z, float timeSinceLastTick) {
 
@@ -232,12 +268,17 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
         if (!Antimatter.shouldRender) return;
 
+        if (hasFailed) return;
+
         if (!initialized) {
             init();
             if (!initialized) {
+                GTMod.GT_FML_LOGGER.error("Failed to properly initialize antimatter forge render");
+                hasFailed = true;
                 return;
             }
         }
+
         float tx = (float) x + 0.5f;
         float ty = (float) y + 0.5f;
         float tz = (float) z + 0.5f;
@@ -249,5 +290,7 @@ public class AntimatterRenderer extends TileEntitySpecialRenderer {
 
         if (!Antimatter.protomatterRender) return;
         renderProtomatterBeam(Antimatter, tx, ty, tz, timer);
+
+        renderRing(Antimatter, tx, ty, tz, timer);
     }
 }

@@ -90,25 +90,27 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
     private static final float coefficientBaseExp = 0.5f;
     private static final float baseSkew = 0.2f;
 
-    private float[] modifiers = { 0.0f, 0.0f, 0.0f, 0.0f };
-    private FluidStack[] upgradeFluids = { null, null, null, null };
-    private int[] fluidConsumptions = { 0, 0, 0, 0 };
+    private final float[] modifiers = { 0.0f, 0.0f, 0.0f, 0.0f };
+    private final FluidStack[] upgradeFluids = { null, null, null, null };
+    private final int[] fluidConsumptions = { 0, 0, 0, 0 };
 
     public static final String MAIN_NAME = "antimatterForge";
-    private int speed = 100;
+    private final int speed = 20;
     private long rollingCost = 0L;
     private boolean isLoadedChunk;
     public GTRecipe mLastRecipe;
     public int para;
-    private Random r = new Random();
+    private final Random r = new Random();
     // Values for displaying cycle data
     private long guiAntimatterAmount = 0;
     private long guiAntimatterChange = 0;
     private long guiPassiveEnergy = 0;
     private long guiActiveEnergy = 0;
 
-    private List<AntimatterOutputHatch> amOutputHatches = new ArrayList<>(16);
-    private static final ClassValue<IStructureDefinition<AntimatterForge>> STRUCTURE_DEFINITION = new ClassValue<IStructureDefinition<AntimatterForge>>() {
+    private final boolean canRender = false;
+
+    private final List<AntimatterOutputHatch> amOutputHatches = new ArrayList<>(16);
+    private static final ClassValue<IStructureDefinition<AntimatterForge>> STRUCTURE_DEFINITION = new ClassValue<>() {
 
         @Override
         protected IStructureDefinition<AntimatterForge> computeValue(Class<?> type) {
@@ -142,7 +144,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                             .anyOf(HatchElement.Energy.or(HatchElement.ExoticEnergy))
                             .adder(AntimatterForge::addEnergyInjector)
                             .casingIndex(x.textureIndex(2))
-                            .dot(4)
+                            .dot(2)
                             .buildAndChain(x.getCasingBlock(2), x.getCasingMeta(2))))
                 .build();
         }
@@ -183,25 +185,25 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
             .addInfo(EnumChatFormatting.LIGHT_PURPLE + "Dimensions not included!" + EnumChatFormatting.GRAY)
             .addInfo("Converts protomatter into antimatter")
             .addInfo(
-                "Consumes 10 000 000 + (" + EnumChatFormatting.DARK_BLUE
+                "Consumes 10 000 000 + (" + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + " * "
-                    + String.valueOf(this.passiveBaseMult)
+                    + passiveBaseMult
                     + ")^"
                     + EnumChatFormatting.GREEN
-                    + String.valueOf(this.passiveBaseExp)
+                    + passiveBaseExp
                     + EnumChatFormatting.GRAY
                     + " EU/t passively. The consumption decays by 0.5% every tick when empty")
             .addInfo(
-                "Uses (" + EnumChatFormatting.DARK_BLUE
+                "Uses (" + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + " * "
-                    + String.valueOf(this.activeBaseMult)
+                    + activeBaseMult
                     + ")^"
                     + EnumChatFormatting.DARK_PURPLE
-                    + String.valueOf(this.activeBaseExp)
+                    + activeBaseExp
                     + EnumChatFormatting.GRAY
                     + " EU per operation to produce antimatter")
             .addSeparator()
@@ -216,26 +218,33 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                     + "10% of antimatter will be voided!"
                     + EnumChatFormatting.GRAY)
             .addInfo(
-                "Produces (" + EnumChatFormatting.DARK_BLUE
+                "Produces (" + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + "^"
                     + EnumChatFormatting.GOLD
-                    + String.valueOf(this.coefficientBaseExp)
+                    + coefficientBaseExp
                     + EnumChatFormatting.GRAY
                     + ") * N("
                     + EnumChatFormatting.AQUA
-                    + String.valueOf(this.baseSkew)
+                    + baseSkew
                     + EnumChatFormatting.GRAY
-                    + ", 1) of antimatter per cycle, consuming equal amounts of Protomatter")
-            .addInfo("The change can be negative! (N = Skewed Normal Distribution)")
+                    + ", 0.25) of antimatter per cycle, consuming equal amounts of Protomatter")
+            .addInfo(
+                "The change is split between the 16 Antimatter Hatches, sampled from N(" + EnumChatFormatting.AQUA
+                    + baseSkew
+                    + EnumChatFormatting.GRAY
+                    + ", 1) (Gaussian distribution with mean of "
+                    + baseSkew
+                    + ")")
+            .addInfo("The total change can be negative!")
             .addSeparator()
             .addInfo("Can be supplied with stabilization fluids to improve antimatter generation")
             .addInfo(
                 EnumChatFormatting.GREEN + "Magnetic Stabilization"
                     + EnumChatFormatting.GRAY
                     + " (Uses "
-                    + EnumChatFormatting.DARK_BLUE
+                    + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + "^0.5 per cycle)")
@@ -251,7 +260,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                 EnumChatFormatting.DARK_PURPLE + "Gravity Stabilization"
                     + EnumChatFormatting.GRAY
                     + " (Uses "
-                    + EnumChatFormatting.DARK_BLUE
+                    + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + "^0.5 per cycle)")
@@ -271,7 +280,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                 EnumChatFormatting.GOLD + "Containment Stabilization"
                     + EnumChatFormatting.GRAY
                     + " (Uses "
-                    + EnumChatFormatting.DARK_BLUE
+                    + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + "^(2/7) per operation)")
@@ -285,7 +294,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                 EnumChatFormatting.AQUA + "Activation Stabilization"
                     + EnumChatFormatting.GRAY
                     + " (Uses "
-                    + EnumChatFormatting.DARK_BLUE
+                    + EnumChatFormatting.DARK_AQUA
                     + "Antimatter"
                     + EnumChatFormatting.GRAY
                     + "^(1/3) per operation)")
@@ -297,10 +306,15 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
                 "2. Depleted Naquadah Fuel Mk VI - Distribution skew " + EnumChatFormatting.AQUA
                     + "+0.10"
                     + EnumChatFormatting.GRAY)
-            .addSeparator()
-            .addEnergyHatch("1-9, Hint block with dot 4", 4)
+            .addInfo("Each stabilization can only use one of the fluids at a time")
+            .addCasingInfoMin("Antimatter Containment Casing", 512, false)
+            .addCasingInfoMin("Magnetic Flux Casing", 2274, false)
+            .addCasingInfoMin("Gravity Stabilization Casing", 623, false)
+            .addCasingInfoMin("Protomatter Activation Coil", 126, false)
             .addInputHatch("1-6, Hint block with dot 1", 1)
-            .toolTipFinisher("Good Generator");
+            .addEnergyHatch("1-9, Hint block with dot 2", 2)
+            .addOtherStructurePart("Antimatter Hatch", "16, Hint Block with dot 3", 3)
+            .toolTipFinisher();
         return tt;
     }
 
@@ -446,21 +460,17 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
 
     private long calculateContainedAntimatter() {
         long antimatterStored = 0;
-        for (int i = 0; i < amOutputHatches.size(); i++) {
-            if (amOutputHatches.get(i) == null || !amOutputHatches.get(i)
-                .isValid()
-                || amOutputHatches.get(i)
-                    .getFluid() == null)
-                continue;
-            antimatterStored += amOutputHatches.get(i)
-                .getFluid().amount;
+        for (AntimatterOutputHatch amOutputHatch : amOutputHatches) {
+            if (amOutputHatch != null && amOutputHatch.isValid() && amOutputHatch.getFluid() != null) {
+                antimatterStored += amOutputHatch.getFluid().amount;
+            }
         }
         return antimatterStored;
     }
 
-    private void setModifiers(FluidStack inputFluid, float step, FluidStack[] upgradeFluids, int upgradeId) {
-        for (int tier = 1; tier <= upgradeFluids.length; tier++) {
-            if (inputFluid.isFluidEqual(upgradeFluids[tier - 1])) {
+    private void setModifiers(FluidStack inputFluid, float step, FluidStack[] fluidArray, int upgradeId) {
+        for (int tier = 1; tier <= fluidArray.length; tier++) {
+            if (inputFluid.isFluidEqual(fluidArray[tier - 1])) {
                 if (inputFluid.amount >= fluidConsumptions[upgradeId]) {
                     modifiers[upgradeId] = step * tier;
                     upgradeFluids[upgradeId] = inputFluid;
@@ -492,17 +502,12 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
         int ratioLosses = 0;
         // Reduce the amount of antimatter in each hatch by half of the difference between the lowest amount and current
         // hatch contents
-        for (int i = 0; i < amOutputHatches.size(); i++) {
-            if (amOutputHatches.get(i) == null || !amOutputHatches.get(i)
-                .isValid()
-                || amOutputHatches.get(i)
-                    .getFluid() == null)
-                continue;
-            FluidStack fluid = amOutputHatches.get(i)
-                .getFluid()
-                .copy();
-            ratioLosses -= amOutputHatches.get(i)
-                .drain((int) ((fluid.amount - minAntimatterAmount) * 0.5), true).amount;
+        for (AntimatterOutputHatch amOutputHatch : amOutputHatches) {
+            if (amOutputHatch != null && amOutputHatch.isValid() && amOutputHatch.getFluid() != null) {
+                FluidStack fluid = amOutputHatch.getFluid()
+                    .copy();
+                ratioLosses -= amOutputHatch.drain((int) ((fluid.amount - minAntimatterAmount) * 0.5), true).amount;
+            }
         }
 
         // Check for upgrade fluids
@@ -510,8 +515,8 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
 
         fluidConsumptions[MAGNETIC_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 0.5));
         fluidConsumptions[GRAVITY_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 0.5));
-        fluidConsumptions[CONTAINMENT_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 2 / 7));
-        fluidConsumptions[ACTIVATION_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 1 / 3));
+        fluidConsumptions[CONTAINMENT_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 2.0f / 7.0f));
+        fluidConsumptions[ACTIVATION_ID] = (int) Math.ceil(Math.pow(totalAntimatterAmount, 1.0f / 3.0f));
 
         for (int i = 0; i < modifiers.length; i++) {
             modifiers[i] = 0.0f;
@@ -519,8 +524,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
         }
 
         List<FluidStack> inputFluids = getStoredFluids();
-        for (int i = 0; i < inputFluids.size(); i++) {
-            FluidStack inputFluid = inputFluids.get(i);
+        for (FluidStack inputFluid : inputFluids) {
             setModifiers(inputFluid, -0.15f, magneticUpgrades, MAGNETIC_ID);
             setModifiers(inputFluid, -0.05f, gravityUpgrades, GRAVITY_ID);
             setModifiers(inputFluid, 0.05f, containmentUpgrades, CONTAINMENT_ID);
@@ -556,7 +560,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
             containedProtomatter);
 
         // We didn't have enough protomatter, reduce antimatter by 10% and stop the machine.
-        if (!this.depleteInput(MaterialsUEVplus.Protomatter.getFluid((long) Math.abs(antimatterChange)))) {
+        if (!this.depleteInput(MaterialsUEVplus.Protomatter.getFluid(Math.abs(antimatterChange)))) {
             decimateAntimatter();
             stopMachine(ShutDownReasonRegistry.outOfFluid(MaterialsUEVplus.Protomatter.getFluid(1L)));
             endRecipeProcessing();
@@ -608,17 +612,12 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
     }
 
     private void decimateAntimatter() {
-        for (int i = 0; i < amOutputHatches.size(); i++) {
-            if (amOutputHatches.get(i) == null || !amOutputHatches.get(i)
-                .isValid()
-                || amOutputHatches.get(i)
-                    .getFluid() == null)
-                continue;
-            FluidStack fluid = amOutputHatches.get(i)
-                .getFluid()
-                .copy();
-            amOutputHatches.get(i)
-                .drain((int) Math.floor(fluid.amount * 0.1), true);
+        for (AntimatterOutputHatch amOutputHatch : amOutputHatches) {
+            if (amOutputHatch != null && amOutputHatch.isValid() && amOutputHatch.getFluid() != null) {
+                FluidStack fluid = amOutputHatch.getFluid()
+                    .copy();
+                amOutputHatch.drain((int) Math.floor(fluid.amount * 0.1), true);
+            }
         }
     }
 
@@ -633,7 +632,7 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
             int change = (int) (Math.ceil((r.nextGaussian() + baseSkew + modifiers[ACTIVATION_ID]) * (coeff / 16)));
             difference += change;
             if (change >= 0) {
-                hatch.fill(MaterialsUEVplus.Antimatter.getFluid((long) (change)), true);
+                hatch.fill(MaterialsUEVplus.Antimatter.getFluid(change), true);
             } else {
                 hatch.drain(-change, true);
             }
@@ -880,12 +879,15 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
     }
 
     public void updateAntimatterSize(float antimatterAmount) {
-        TileAntimatter render = forceGetAntimatterRender();
-
-        if (antimatterAmount < 0) {
-            setProtoRender(false);
-            render.setCoreSize(0);
+        if (antimatterAmount <= 0) {
+            destroyAntimatterRender();
             return;
+        }
+
+        TileAntimatter render = getAntimatterRender();
+        if (render == null) {
+            createAntimatterRender();
+            render = getAntimatterRender();
         }
 
         float size = (float) Math.pow(antimatterAmount, 0.17);
@@ -893,9 +895,11 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
     }
 
     public void setProtoRender(boolean flag) {
-        TileAntimatter render = forceGetAntimatterRender();
+        TileAntimatter render = getAntimatterRender();
+        if (render == null) return;
         render.setProtomatterRender(flag);
-        if (flag) render.setRotationFields(getRotation(), getDirection());
+        if (!flag) return;
+        render.setRotationFields(getDirection(), getRotation());
     }
 
     public TileAntimatter getAntimatterRender() {
@@ -967,12 +971,4 @@ public class AntimatterForge extends MTEExtendedPowerMultiBlockBase<AntimatterFo
         world.setBlock(wX, wY, wZ, Blocks.air);
         world.setBlock(wX, wY, wZ, Loaders.antimatterRenderBlock);
     }
-
-    public TileAntimatter forceGetAntimatterRender() {
-        TileAntimatter render = getAntimatterRender();
-        if (render != null) return render;
-        else createAntimatterRender();
-        return getAntimatterRender();
-    }
-
 }

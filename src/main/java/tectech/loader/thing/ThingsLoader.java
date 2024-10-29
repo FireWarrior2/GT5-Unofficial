@@ -17,6 +17,7 @@ import tectech.thing.casing.SpacetimeCompressionFieldCasing;
 import tectech.thing.casing.StabilisationFieldCasing;
 import tectech.thing.casing.TTCasingsContainer;
 import tectech.thing.casing.TimeAccelerationFieldCasing;
+import tectech.thing.item.FakeItemQGP;
 import tectech.thing.item.ItemAstralArrayFabricator;
 import tectech.thing.item.ItemEnderFluidLinkCover;
 import tectech.thing.item.ItemEuMeterGT;
@@ -61,13 +62,11 @@ public class ThingsLoader implements Runnable {
 
         TTCasingsContainer.StabilisationFieldGenerators = new StabilisationFieldCasing();
 
-        if (tectech.TecTech.configTecTech.ENABLE_GOD_FORGE) {
-            TTCasingsContainer.GodforgeCasings = new BlockGodforgeCasings();
-            TecTech.LOGGER.info("Godforge blocks registered.");
+        TTCasingsContainer.GodforgeCasings = new BlockGodforgeCasings();
+        TecTech.LOGGER.info("Godforge blocks registered.");
 
-            BlockGodforgeGlass.run();
-            TecTech.LOGGER.info("Godforge Glass registered");
-        }
+        BlockGodforgeGlass.run();
+        TecTech.LOGGER.info("Godforge Glass registered");
 
         BlockQuantumGlass.run();
         TecTech.LOGGER.info("Quantum Glass registered");
@@ -86,6 +85,7 @@ public class ThingsLoader implements Runnable {
 
         ItemTeslaCoilComponent.run();
         ItemAstralArrayFabricator.run();
+        FakeItemQGP.run();
         TecTech.LOGGER.info("Crafting Components registered");
 
         TecTech.LOGGER.info("Debug Items registered");

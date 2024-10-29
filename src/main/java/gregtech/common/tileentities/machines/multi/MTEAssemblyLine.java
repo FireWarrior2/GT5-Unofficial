@@ -15,7 +15,7 @@ import static gregtech.api.enums.Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE
 import static gregtech.api.enums.Textures.BlockIcons.OVERLAY_FRONT_ASSEMBLY_LINE_GLOW;
 import static gregtech.api.util.GTStructureUtility.buildHatchAdder;
 import static gregtech.api.util.GTStructureUtility.ofHatchAdder;
-import static gregtech.api.util.GTUtility.filterValidMTEs;
+import static gregtech.api.util.GTUtility.validMTEList;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,11 +132,9 @@ public class MTEAssemblyLine extends MTEExtendedPowerMultiBlockBase<MTEAssemblyL
     protected MultiblockTooltipBuilder createTooltip() {
         final MultiblockTooltipBuilder tt = new MultiblockTooltipBuilder();
         tt.addMachineType("Assembling Line")
-            .addInfo("Controller block for the Assembling Line")
             .addInfo("Used to make complex machine parts (LuV+)")
             .addInfo("Does not make Assembler items")
             .addInfo("Recipe tier is at most Energy Hatch tier + 1.")
-            .addSeparator()
             .beginVariableStructureBlock(5, 16, 4, 4, 3, 3, false) // ?
             .addStructureInfo("From Bottom to Top, Left to Right")
             .addStructureInfo(
@@ -153,7 +151,7 @@ public class MTEAssemblyLine extends MTEExtendedPowerMultiBlockBase<MTEAssemblyL
             .addInputHatch("Any layer 1 casing", 3)
             .addOutputBus("Replaces Input Bus on final slice or on any solid steel casing on layer 1", 4)
             .addOtherStructurePart("Data Access Hatch", "Optional, next to controller", 2)
-            .toolTipFinisher("Gregtech");
+            .toolTipFinisher();
         return tt;
     }
 
@@ -439,7 +437,7 @@ public class MTEAssemblyLine extends MTEExtendedPowerMultiBlockBase<MTEAssemblyL
         if (GTUtility.isStackValid(mInventory[1]) && isCorrectDataItem(mInventory[1], state)) {
             rList.add(mInventory[1]);
         }
-        for (MTEHatchDataAccess tHatch : filterValidMTEs(mDataAccessHatches)) {
+        for (MTEHatchDataAccess tHatch : validMTEList(mDataAccessHatches)) {
             rList.addAll(tHatch.getInventoryItems(stack -> isCorrectDataItem(stack, state)));
         }
         return rList;
