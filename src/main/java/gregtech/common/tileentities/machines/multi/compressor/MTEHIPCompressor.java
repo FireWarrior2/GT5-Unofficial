@@ -71,11 +71,11 @@ public class MTEHIPCompressor extends MTEExtendedPowerMultiBlockBase<MTEHIPCompr
             transpose(new String[][]{
                 {"               ","               ","               "," CCCCCC DDDDDD ","               ","               ","               "},
                 {"               ","               ","               "," C    C D    D ","               ","               ","               "},
-                {"               ","      HHH      ","     HHHHH     "," C   HHHHH   D ","     HHHHH     ","      HHH      ","               "},
-                {"      BBB      ","     BBBBB     ","    BBBBBBB    "," C  BBBBBBB  D ","    BBBBBBB    ","     BBBBB     ","      BBB      "},
+                {"               ","      HHH      ","     HHHHH     "," C   HCHDH   D ","     HHHHH     ","      HHH      ","               "},
+                {"      BBB      ","     BBBBB     ","    BBBBBBB    "," C  BBCBDBB  D ","    BBBBBBB    ","     BBBBB     ","      BBB      "},
                 {"      HHH      ","     B   B     ","    BF   FB    "," C  BF   FB  D ","    BF   FB    ","     B   B     ","      HHH      "},
                 {"      HAH      ","     B   B     ","    GF   FG    "," C  GF   FG  D ","    GF   FG    ","     B   B     ","      HAH      "},
-                {"      HAH      ","     B   B     "," B  GF   FG  B ","BBB GF   FG BBB"," B  GF   FG  B ","     B   B     ","      HAH      "},
+                {"      HAH      ","     B   B     "," B  GF   FG  B ","BCB GF   FG BDB"," B  GF   FG  B ","     B   B     ","      HAH      "},
                 {"      HAH      ","     B   B     "," A  GF   FG  A ","A A GF   FG A A"," A  GF   FG  A ","     B   B     ","      HAH      "},
                 {"      HHH      ","     B   B     "," A  BF   FB  A ","A A BF   FB A A"," A  BF   FB  A ","     B   B     ","      HHH      "},
                 {"      B~B      ","     BBBBB     "," B  BBBBBBB  B ","BBB BBBBBBB BBB"," B  BBBBBBB  B ","     BBBBB     ","      BBB      "}
@@ -265,13 +265,13 @@ public class MTEHIPCompressor extends MTEExtendedPowerMultiBlockBase<MTEHIPCompr
                     + " parallels per voltage tier")
             .beginStructureBlock(7, 5, 7, true)
             .addController("Front Center")
-            .addCasingInfoMin("Electric Compressor Casing", 95, false)
-            .addCasingInfoMin("Compressor Pipe Casing", 45, false)
-            .addCasingInfoExactly("Coolant Duct", 12, false)
-            .addCasingInfoExactly("Heating Duct", 12, false)
+            .addCasingInfoMin("Electric Compressor Casing", 91, false)
+            .addCasingInfoMin("Compressor Pipe Casing", 43, false)
+            .addCasingInfoExactly("Coolant Duct", 15, false)
+            .addCasingInfoExactly("Heating Duct", 15, false)
             .addCasingInfoExactly("EV+ Glass", 22, false)
-            .addCasingInfoExactly("Clean Stainless Steel Machine Casing", 20, false)
             .addCasingInfoExactly("Coil", 30, true)
+            .addOtherStructurePart("Heat Sensor Hatch", 1)
             .addInputBus("Pipe Casings on Side", 2)
             .addInputHatch("Pipe Casings on Side", 2)
             .addOutputBus("Pipe Casings on Side", 2)
